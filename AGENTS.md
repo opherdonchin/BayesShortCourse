@@ -32,8 +32,9 @@ Prefer current native PyMC and ArviZ functionality documented by those skills ov
 
 - Jupyter notebooks are intended primarily for Google Colab.
 - Target the current Colab Python/PyMC/ArviZ environment.
-- Do not pin package versions in teaching notebooks. Let dependencies float with the current Colab environment.
-- If a future incompatibility appears, first update the notebook to the current Colab/PyMC/ArviZ APIs rather than freezing old versions. Only introduce a temporary pin with explicit user approval.
+- Use the packages already provided by Colab. Do not add `pip install`, `%pip install`, or other package-installation steps to teaching notebooks.
+- Do not pin package versions in teaching notebooks.
+- If a future incompatibility appears, first update the notebook to the current Colab/PyMC/ArviZ APIs rather than installing or freezing a different environment. Ask for explicit user approval before adding any package installation or temporary pin.
 - Do not replace a working Colab environment merely to match versions used elsewhere.
 - Notebooks should run top-to-bottom from a fresh Colab runtime without relying on hidden state or execution out of order.
 - Keep setup and imports near the beginning of the notebook.
