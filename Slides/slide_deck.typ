@@ -1,17 +1,33 @@
 #import "@preview/touying:0.6.1": *
+#import themes.metropolis: *
 
-#set document(
-  title: [A Short Practical Introduction to Bayesian Analysis],
-  author: [Opher Donchin],
+#show: metropolis-theme.with(
+  aspect-ratio: "16-9",
+  footer: self => self.info.title,
+  config-info(
+    title: [A Short Practical Introduction to Bayesian Analysis],
+    author: [Opher Donchin],
+    date: datetime.today(),
+  ),
+  config-colors(primary: rgb("#eb811b")),
 )
 
-= A Short Practical Introduction to Bayesian Analysis
+#set text(size: 22pt)
+#set par(justify: false)
+
+#title-slide()
 
 == Today: from worked example to independent analysis
+
+== Outline <touying:hidden>
+
+#components.adaptive-columns(outline(title: none, indent: 1em, depth: 1))
 
 = A short worked example: dose response
 
 == Four doses, twenty animals
+
+
 
 == A generative model for mortality
 
