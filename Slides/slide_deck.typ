@@ -1,5 +1,4 @@
 #import "course.typ": *
-#import "@preview/lilaq:0.6.0" as lq
 #import "diagrams/bioassay_model.typ": bioassay-model-graph
 
 #show: short-course-theme
@@ -21,45 +20,6 @@ Dose response
   animals: (5, 5, 5, 5),
   deaths: (0, 1, 3, 5),
 )
-
-// Observed proportion dead, optionally with the 50% line that defines LD50.
-//
-// TODO: This plot is drawn here only because the notebooks do not yet save
-// slide figures. Following "Figures for slides" in AGENTS.md, it should come
-// from section "## 1. Data" of bioassay/bioassay_lean.ipynb:
-//   - after the scatter plot, call `save_slide_figure(fig, "data")`
-//     -> Slides/figures/bioassay_lean_data.svg;
-//   - add `ax.axhline(0.5, linestyle="--")` and call
-//     `save_slide_figure(fig, "data", 2)` -> bioassay_lean_data_2.svg.
-// Then replace `bioassay-plot(...)` below with
-//   image("figures/bioassay_lean_data.svg") and
-//   image("figures/bioassay_lean_data_2.svg"),
-// and delete this helper and its Lilaq import.
-#let bioassay-plot(show-half: false) = {
-  // Lilaq typesets tick labels as math; draw their digits in the slide font.
-  show math.equation: set text(font: (
-    (name: "Libertinus Serif", covers: regex("[0-9.−]")),
-    "New Computer Modern Math",
-  ))
-  lq.diagram(
-    width: 11cm,
-    height: 6.5cm,
-    xlim: (-1, 1),
-    ylim: (-0.05, 1.05),
-    xlabel: [log dose (g/ml)],
-    ylabel: [proportion dead],
-    ..if show-half {
-      let half-stroke = (paint: rgb("#eb811b"), thickness: 1.5pt, dash: "dashed")
-      (lq.hlines(0.5, stroke: half-stroke),)
-    },
-    lq.scatter(
-      bioassay.dose,
-      bioassay.dose.zip(bioassay.animals, bioassay.deaths).map(((x, n, y)) => y / n),
-      size: 10pt,
-      color: rgb("#23373b"),
-    ),
-  )
-}
 
 #let two-decimals(x) = {
   let s = str(x)
@@ -89,7 +49,12 @@ A toxin is given to rats at four doses, five rats per dose.
   column-gutter: 1.5em,
   align: horizon,
   bioassay-table,
-  alternatives(bioassay-plot(), bioassay-plot(show-half: true)),
+  // Saved by section "## 1. Data" of bioassay/bioassay_lean.ipynb; the second
+  // version adds the 50% line that defines LD50.
+  alternatives(
+    image("figures/bioassay_lean_data.svg", height: 8.5cm),
+    image("figures/bioassay_lean_data_2.svg", height: 8.5cm),
+  ),
 )
 
 
@@ -150,22 +115,29 @@ Draw $alpha, beta$ from the priors #sym.arrow simulate deaths at each dose
 )
 
 #speaker-note[
-  - Common sense: many simulated experiments are all-or-nothing (everyone
-    dies, or no one does, at every dose). Would anyone design a study that way?
-  - Our data: the observed experiment looks like one of the simulated ones.
-  - Not confined: simulated curves range from flat to very steep, with the
-    50% point anywhere in or beyond the dose range.
+  - Common sense: simulated deaths rise with dose, but the 90% band covers
+    0--5 at every dose, so even the lowest dose could kill every rat. Would
+    anyone design a study that way?
+  - Our data: every observed count lies inside the 90% band.
+  - Not confined: the bands span the whole 0--5 range, so the model could
+    have accommodated very different results.
 ]
 
 == Sampling and diagnostics
 
-
+// In this slide, we can show the code that calls the sampler and the resultiing trace and diagnostics. The code is a bare-bones version of the sampling cell in bioassay/bioassay_lean.ipynb. In addition, we should include a bit of text saying that 'fitting the model' means sampling the posterior distribution. This isn't something to dwell on in the slides or to try to explain in any depth. But the fact should be out there. We can relate this to the frequentist bootstr
 
 == Posterior: which dose-response curves remain plausible?
 
 == LD50: the quantity we actually care about
 
 == Posterior predictive: can the model reproduce the experiment?
+
+The same plot as the prior predictive, but the simulated deaths now come from
+the posterior.
+
+// Saved by section "## 6. Posterior predictive" of bioassay/bioassay_lean.ipynb.
+#align(center, image("figures/bioassay_lean_posterior-predictive.svg", height: 75%))
 
 = The Bayesian toolkit
 
