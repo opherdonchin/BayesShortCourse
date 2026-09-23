@@ -113,6 +113,7 @@ When a derived quantity is the scientific target (for example LD50), give it vis
 ## Figures
 
 - Prefer figures generated reproducibly from the course notebooks or small figure-generation scripts.
+- Notebook figures are saved to `Slides/figures/` as `<notebook>_<section>[_<n>].svg`; see *Figures for slides* in `AGENTS.md`. Reference them from there rather than redrawing notebook plots in Typst.
 - Prefer vector output such as SVG when practical; use high-resolution raster images when vector output is inappropriate.
 - Avoid screenshots of plots when the underlying figure can be exported directly.
 - Make labels, legends, lines, and annotations large enough for projection.
