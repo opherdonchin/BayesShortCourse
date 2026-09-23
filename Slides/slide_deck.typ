@@ -92,9 +92,6 @@ with pm.Model() as model:
 
 == Priors: what could we have seen?
 
-Draw $alpha, beta$ from the priors #sym.arrow simulate deaths at each dose
-#sym.arrow look, _before_ fitting.
-
 #grid(
   columns: (1.4fr, 1fr),
   column-gutter: 1.2em,
@@ -151,8 +148,7 @@ with model:
 
 == Posterior: which dose-response curves remain plausible?
 
-The bands show uncertainty about the mean number of deaths, $5p$, not about
-new counts.
+The bands show uncertainty about the mean number of deaths.
 
 // Saved by section "## 5. Posterior dose-response fit" of
 // bioassay/bioassay.ipynb; the second figure is the same display under
@@ -180,8 +176,9 @@ new counts.
   column-gutter: 1.2em,
   align: horizon,
   [
-    - Any quantity can be computed from the parameters: $"LD50" = -alpha \/ beta$,
-      once for every posterior draw.
+    - Any quantity can be computed from the parameters:
+      - $"LD50" = -alpha \/ beta$
+        - Once for every posterior draw.
     #uncover("2-")[- So every quantity comes with its own uncertainty.]
     #uncover("3-")[- Here _how well_ we know LD50 matters as much as its value.]
   ],
@@ -190,7 +187,7 @@ new counts.
     #image("figures/bioassay_ld50.svg", width: 100%)
     // Values from the notebook's azs.summary of LD50_mg_ml.
     #align(center, text(size: 18pt)[
-      median 910 mg/ml \
+      mean 930 mg/ml \
       90% HDI 716--1,119 mg/ml
     ])
   ],
@@ -212,10 +209,9 @@ new counts.
   // Saved by section "## 7. Posterior predictive" of bioassay/bioassay.ipynb.
   image("figures/bioassay_posterior-predictive.svg", width: 100%),
   [
-    The prior predictive display, now simulated from the posterior.
-
-    #uncover("2-")[- A workflow check, made _after_ looking at the posterior.]
-    #uncover("3-")[- The workflow is not lockstep: going back to check is always fine.]
+    This is what the model predicts we could have seen, _after_ fitting.
+    #uncover("2-")[- A workflow check meant to be done before looking at the posterior.]
+    #uncover("3-")[- Workflow is not lockstep: going back to check is always fine.]
     #uncover("4-")[- We understand data better than we understand parameters.]
   ],
 )
