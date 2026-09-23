@@ -54,17 +54,17 @@ Figures used in the slides are saved by the notebook that makes them, so any sli
 
 - Save slide figures to `Slides/figures/` as SVG. Use PNG (at least 200 dpi) only when vector output is impractical, for example with very many points.
 - Name each file `<notebook>_<section>[_<n>].svg`:
-  - `<notebook>` is the notebook file name without `.ipynb`, e.g. `bioassay_lean`;
+  - `<notebook>` is the notebook file name without `.ipynb`, e.g. `bioassay`;
   - `<section>` is a slug of the notebook's current `##` section heading: lowercase, words joined by hyphens, leading section number dropped (`## 3. Prior predictive` → `prior-predictive`);
   - `_<n>` is added only when a section saves more than one figure: the first figure has no number, the next is `_2`, then `_3`.
-  - Example: `bioassay_lean_prior-predictive.svg`, `bioassay_lean_prior-predictive_2.svg`.
+  - Example: `bioassay_prior-predictive.svg`, `bioassay_prior-predictive_2.svg`.
 - File names depend on section headings, so keep `##` headings short, stable, and unique within a notebook. Renaming a section renames its figures; update the slides that use them in the same change.
 - Define the notebook name, output directory, and a small save helper in the setup cell. The fallback directory keeps the notebook runnable in Colab, where the repository is not present; figures saved there can be downloaded.
 
   ```python
   from pathlib import Path
 
-  NOTEBOOK = "bioassay_lean"
+  NOTEBOOK = "bioassay"
   FIG_DIR = Path("../Slides/figures") if Path("../Slides").is_dir() else Path("figures")
   FIG_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -114,6 +114,29 @@ Use 90% HDIs in course material unless the notebook has a substantive reason to 
 - Explain parameters in terms of their scientific meaning, not only their computational role.
 - Keep Markdown concise and pedagogical rather than documentation-heavy.
 - Preserve a clear narrative from scientific question to model to inference to predictive checking.
+
+## Critiquing and improving teaching notebooks
+
+When reviewing an existing teaching notebook, optimize first for conceptual clarity and teaching load, then for code elegance.
+
+- Start by identifying the notebook's teaching goal, intended stopping point, and the minimum sequence needed to reach it. Remove later sections that add conceptual burden without serving that goal.
+- Keep the first model as small as possible. Every parameter, deterministic variable, helper quantity, and transformation should either express the scientific model directly, answer a stated inferential question, or be used later. Otherwise remove it or calculate it only at the point where it becomes necessary.
+- Prefer native likelihood parameterizations and current PyMC/ArviZ APIs when they eliminate unnecessary intermediate quantities or hand-written computation.
+- Before making a plot, state exactly which random quantity it displays. Distinguish clearly between a latent parameter or mean response and a predictive observation. Never let a visually similar plot blur that distinction.
+- When posterior uncertainty about the fitted mean and posterior predictive variability answer different questions, show both separately rather than treating one as a substitute for the other.
+- Put prior predictive and posterior predictive checks on the observable data scale whenever possible. They should answer "what data could this model generate?" rather than merely display parameter uncertainty.
+- Use the same graphical grammar for directly comparable stages of the workflow. Prior predictive and posterior predictive plots should normally use the same axes, units, interval conventions, visual encodings, and overall layout so the effect of conditioning on data is immediately visible.
+- Keep axis labels scientific and problem-specific. Do not expose implementation details such as observation indices, coordinate names, or generic "data point" labels when meaningful predictor values or units are available.
+- Match plot geometry to the support of the data. For discrete or sparsely sampled outcomes, avoid smooth ribbons or interpolated shapes when they imply continuity that is not present. Prefer points, vertical intervals, or other displays that make the discrete support clear.
+- Remember that HDIs need not be centered on the median, especially for skewed or discrete distributions. If a mathematically valid interval looks visually misleading, improve the display or annotation rather than silently changing the inferential quantity.
+- Legends should explain the plot without dominating it. Use short labels, compact handles, modest font sizes, consistent ordering, and unobtrusive placement. The plot area should remain the visual focus.
+- Keep colors, line styles, interval widths, and labels semantically consistent across related plots. Do not make the learner relearn the legend from one workflow stage to the next.
+- Prefer one figure that answers one clear question over several partially redundant figures. If two figures remain, be able to state precisely what additional information the second one contributes.
+- Use native ArviZ plotting functions where they communicate the intended quantity well, but do not preserve a native default that obscures the statistical meaning. Small Matplotlib adjustments for labels, legends, scales, or interval geometry are appropriate.
+- Keep central teaching code visible in the notebook. Avoid abstractions that hide the model or inferential step, while allowing small reusable helpers for purely presentational details.
+- Keep Markdown concise and question-driven. A section should normally establish the scientific/statistical question, show the code or plot that answers it, and briefly interpret the distinction that matters.
+- When a notebook is intentionally lean, treat added sophistication as a cost. Do not add prediction grids, interpolation, extrapolation, sensitivity analyses, or auxiliary summaries merely because they are available.
+- After each substantive revision, reread the notebook from top to bottom as a student would. Check that terminology, section order, visual conventions, and derived quantities remain coherent after deletions or simplifications.
 
 ## Repository hygiene
 
