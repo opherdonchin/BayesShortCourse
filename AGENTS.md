@@ -105,6 +105,8 @@ Prefer scientifically meaningful `pm.Deterministic` quantities when a derived qu
 
 Use 90% HDIs in course material unless the notebook has a substantive reason to use a different interval.
 
+Use the mean as the point estimate in plots and summaries rather than the median. For a discrete outcome the median is a whole number that often lands on an HDI edge, which looks like an error.
+
 ## Teaching and code style
 
 - Prefer the shortest clear native PyMC/ArviZ implementation that exposes the statistical idea.
