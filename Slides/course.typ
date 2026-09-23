@@ -33,6 +33,12 @@
 
 #let course-title-slide() = title-slide()
 
-#let course-outline() = components.adaptive-columns(
-  outline(title: none, indent: 1em, depth: 1),
-)
+#let course-outline() = {
+  // Keep just the body, dropping the fill and the page number. The rule is
+  // inside the function because top-level show rules do not cross imports.
+  show outline.entry: it => link(
+    it.element.location(),
+    it.indented(it.prefix(), it.body()),
+  )
+  components.adaptive-columns(outline(title: none, indent: 1em, depth: 1))
+}
