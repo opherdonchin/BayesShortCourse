@@ -28,6 +28,15 @@
   set text(size: 22pt)
   set par(justify: false)
 
+  // Code blocks: a light shaded box with slightly smaller text.
+  show raw.where(block: true): set text(size: 18pt)
+  show raw.where(block: true): block.with(
+    width: 100%,
+    fill: luma(242),
+    inset: 0.6em,
+    radius: 4pt,
+  )
+
   body
 }
 

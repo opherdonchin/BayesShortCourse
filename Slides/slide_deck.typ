@@ -80,19 +80,15 @@ A toxin is given to rats at four doses, five rats per dose.
   uncover("2-", bioassay-model-graph),
 )
 
-#uncover("3-", block(
-  width: 100%,
-  fill: luma(242),
-  inset: 0.6em,
-  radius: 4pt,
-  text(size: 18pt)[```python
-  with pm.Model() as model:
-      alpha = pm.Normal("alpha", mu=0, sigma=5)
-      beta = pm.HalfNormal("beta", sigma=5)
-      logit_p = alpha + beta * dose
-      pm.Binomial("deaths", n=n, logit_p=logit_p, observed=deaths)
-  ```],
-))
+#uncover("3-")[
+```python
+with pm.Model() as model:
+    alpha = pm.Normal("alpha", mu=0, sigma=5)
+    beta = pm.HalfNormal("beta", sigma=5)
+    logit_p = alpha + beta * dose
+    pm.Binomial("deaths", n=n, logit_p=logit_p, observed=deaths)
+```
+]
 
 == Priors: what could we have seen?
 
@@ -115,29 +111,114 @@ Draw $alpha, beta$ from the priors #sym.arrow simulate deaths at each dose
 )
 
 #speaker-note[
-  - Common sense: simulated deaths rise with dose, but the 90% band covers
-    0--5 at every dose, so even the lowest dose could kill every rat. Would
-    anyone design a study that way?
-  - Our data: every observed count lies inside the 90% band.
-  - Not confined: the bands span the whole 0--5 range, so the model could
-    have accommodated very different results.
+  - Common sense: simulated deaths rise with dose, but the 90% intervals
+    cover 0--5 at every dose, so even the lowest dose could kill every rat.
+    Would anyone design a study that way?
+  - Our data: every observed count lies inside its 90% interval.
+  - Not confined: the intervals span the whole 0--5 range, so the model
+    could have accommodated very different results.
 ]
 
 == Sampling and diagnostics
 
-// In this slide, we can show the code that calls the sampler and the resultiing trace and diagnostics. The code is a bare-bones version of the sampling cell in bioassay/bioassay_lean.ipynb. In addition, we should include a bit of text saying that 'fitting the model' means sampling the posterior distribution. This isn't something to dwell on in the slides or to try to explain in any depth. But the fact should be out there. We can relate this to the frequentist bootstr
+Fitting the model means drawing samples from the posterior distribution.
+
+```python
+with model:
+    idata = pm.sample(draws=1000, chains=4)
+```
+
+#uncover("2-", grid(
+  columns: (auto, 1fr),
+  column-gutter: 1.2em,
+  align: horizon,
+  // Saved by section "## 4. Fit and diagnose" of bioassay/bioassay_lean.ipynb.
+  image("figures/bioassay_lean_fit-and-diagnose.svg", height: 6.5cm),
+  // Values from the notebook's azs.summary of alpha and beta.
+  [
+    Check before interpreting:
+    - 0 divergences
+    - $hat(R) = 1.00$
+    - ESS > 1,300 of 4,000 draws
+  ],
+))
+
+#speaker-note[
+  Like a bootstrap, the result is a cloud of draws rather than a single
+  estimate, and every summary is computed from that cloud. The bootstrap
+  resamples the data; MCMC samples parameter values from the posterior.
+]
 
 == Posterior: which dose-response curves remain plausible?
 
+The bands show uncertainty about the mean number of deaths, $5p$, not about
+new counts.
+
+// Saved by section "## 5. Posterior dose-response fit" of
+// bioassay/bioassay_lean.ipynb; the second figure is the same display under
+// the prior.
+#alternatives(
+  align(center, image("figures/bioassay_lean_posterior-dose-response-fit.svg", height: 9.5cm)),
+  grid(
+    columns: (1fr, 1fr),
+    column-gutter: 1em,
+    align(center)[
+      *Prior*
+      #image("figures/bioassay_lean_posterior-dose-response-fit_2.svg", width: 100%)
+    ],
+    align(center)[
+      *Posterior*
+      #image("figures/bioassay_lean_posterior-dose-response-fit.svg", width: 100%)
+    ],
+  ),
+)
+
 == LD50: the quantity we actually care about
+
+#grid(
+  columns: (1.2fr, 1fr),
+  column-gutter: 1.2em,
+  align: horizon,
+  [
+    - Any quantity can be computed from the parameters: $"LD50" = -alpha \/ beta$,
+      once for every posterior draw.
+    #uncover("2-")[- So every quantity comes with its own uncertainty.]
+    #uncover("3-")[- Here _how well_ we know LD50 matters as much as its value.]
+  ],
+  [
+    // Saved by section "## 6. LD50" of bioassay/bioassay_lean.ipynb.
+    #image("figures/bioassay_lean_ld50.svg", width: 100%)
+    // Values from the notebook's azs.summary of LD50_mg_ml.
+    #align(center, text(size: 18pt)[
+      median 910 mg/ml \
+      90% HDI 716--1,119 mg/ml
+    ])
+  ],
+)
+
+#speaker-note[
+  Racine-Poon et al. (1986) cite a Swiss poison regulation that sorts toxins
+  into hazard categories by LD50. The whole posterior falls inside one category
+  (Bayesian Workflow, Fig. 3.2), so no further experiment is needed. A wider
+  posterior that straddled a boundary would call for more data.
+]
 
 == Posterior predictive: can the model reproduce the experiment?
 
-The same plot as the prior predictive, but the simulated deaths now come from
-the posterior.
+#grid(
+  columns: (1.15fr, 1fr),
+  column-gutter: 1.2em,
+  align: horizon,
+  // Saved by section "## 7. Posterior predictive" of bioassay/bioassay_lean.ipynb.
+  image("figures/bioassay_lean_posterior-predictive.svg", width: 100%),
+  [
+    The prior predictive display, now simulated from the posterior.
 
-// Saved by section "## 6. Posterior predictive" of bioassay/bioassay_lean.ipynb.
-#align(center, image("figures/bioassay_lean_posterior-predictive.svg", height: 75%))
+    #uncover("2-")[- A workflow check, made _after_ looking at the posterior.]
+    #uncover("3-")[- The workflow is not lockstep: going back to check is always fine.]
+    #uncover("4-")[- We understand data better than we understand parameters.]
+  ],
+)
 
 = The Bayesian toolkit
 
