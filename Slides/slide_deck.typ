@@ -49,11 +49,11 @@ A toxin is given to rats at four doses, five rats per dose.
   column-gutter: 1.5em,
   align: horizon,
   bioassay-table,
-  // Saved by section "## 1. Data" of bioassay/bioassay_lean.ipynb; the second
+  // Saved by section "## 1. Data" of bioassay/bioassay.ipynb; the second
   // version adds the 50% line that defines LD50.
   alternatives(
-    image("figures/bioassay_lean_data.svg", height: 8.5cm),
-    image("figures/bioassay_lean_data_2.svg", height: 8.5cm),
+    image("figures/bioassay_data.svg", height: 8.5cm),
+    image("figures/bioassay_data_2.svg", height: 8.5cm),
   ),
 )
 
@@ -66,7 +66,7 @@ A toxin is given to rats at four doses, five rats per dose.
 
 // Equations, graph, and code are three views of the same model; reveal them
 // in that order. The code is a bare-bones version of the model cell in
-// bioassay/bioassay_lean.ipynb.
+// bioassay/bioassay.ipynb.
 #grid(
   columns: (1fr, auto),
   column-gutter: 1.5em,
@@ -99,8 +99,8 @@ Draw $alpha, beta$ from the priors #sym.arrow simulate deaths at each dose
   columns: (1.4fr, 1fr),
   column-gutter: 1.2em,
   align: horizon,
-  // Saved by section "## 3. Prior predictive" of bioassay/bioassay_lean.ipynb.
-  image("figures/bioassay_lean_prior-predictive.svg", width: 100%),
+  // Saved by section "## 3. Prior predictive" of bioassay/bioassay.ipynb.
+  image("figures/bioassay_prior-predictive.svg", width: 100%),
   [
     Prior predictive data should not
 
@@ -111,12 +111,12 @@ Draw $alpha, beta$ from the priors #sym.arrow simulate deaths at each dose
 )
 
 #speaker-note[
-  - Common sense: simulated deaths rise with dose, but the 90% intervals
-    cover 0--5 at every dose, so even the lowest dose could kill every rat.
-    Would anyone design a study that way?
-  - Our data: every observed count lies inside its 90% interval.
-  - Not confined: the intervals span the whole 0--5 range, so the model
-    could have accommodated very different results.
+  - Common sense: simulated deaths rise with dose, but the 90% band covers
+    0--5 at every dose, so even the lowest dose could kill every rat. Would
+    anyone design a study that way?
+  - Our data: every observed count lies inside the 90% band.
+  - Not confined: the band spans the whole 0--5 range, so the model could
+    have accommodated very different results.
 ]
 
 == Sampling and diagnostics
@@ -132,8 +132,8 @@ with model:
   columns: (auto, 1fr),
   column-gutter: 1.2em,
   align: horizon,
-  // Saved by section "## 4. Fit and diagnose" of bioassay/bioassay_lean.ipynb.
-  image("figures/bioassay_lean_fit-and-diagnose.svg", height: 6.5cm),
+  // Saved by section "## 4. Fit and diagnose" of bioassay/bioassay.ipynb.
+  image("figures/bioassay_fit-and-diagnose.svg", height: 6.5cm),
   // Values from the notebook's azs.summary of alpha and beta.
   [
     Check before interpreting:
@@ -155,20 +155,20 @@ The bands show uncertainty about the mean number of deaths, $5p$, not about
 new counts.
 
 // Saved by section "## 5. Posterior dose-response fit" of
-// bioassay/bioassay_lean.ipynb; the second figure is the same display under
+// bioassay/bioassay.ipynb; the second figure is the same display under
 // the prior.
 #alternatives(
-  align(center, image("figures/bioassay_lean_posterior-dose-response-fit.svg", height: 9.5cm)),
+  align(center, image("figures/bioassay_posterior-dose-response-fit.svg", height: 9.5cm)),
   grid(
     columns: (1fr, 1fr),
     column-gutter: 1em,
     align(center)[
       *Prior*
-      #image("figures/bioassay_lean_posterior-dose-response-fit_2.svg", width: 100%)
+      #image("figures/bioassay_posterior-dose-response-fit_2.svg", width: 100%)
     ],
     align(center)[
       *Posterior*
-      #image("figures/bioassay_lean_posterior-dose-response-fit.svg", width: 100%)
+      #image("figures/bioassay_posterior-dose-response-fit.svg", width: 100%)
     ],
   ),
 )
@@ -186,8 +186,8 @@ new counts.
     #uncover("3-")[- Here _how well_ we know LD50 matters as much as its value.]
   ],
   [
-    // Saved by section "## 6. LD50" of bioassay/bioassay_lean.ipynb.
-    #image("figures/bioassay_lean_ld50.svg", width: 100%)
+    // Saved by section "## 6. LD50" of bioassay/bioassay.ipynb.
+    #image("figures/bioassay_ld50.svg", width: 100%)
     // Values from the notebook's azs.summary of LD50_mg_ml.
     #align(center, text(size: 18pt)[
       median 910 mg/ml \
@@ -209,8 +209,8 @@ new counts.
   columns: (1.15fr, 1fr),
   column-gutter: 1.2em,
   align: horizon,
-  // Saved by section "## 7. Posterior predictive" of bioassay/bioassay_lean.ipynb.
-  image("figures/bioassay_lean_posterior-predictive.svg", width: 100%),
+  // Saved by section "## 7. Posterior predictive" of bioassay/bioassay.ipynb.
+  image("figures/bioassay_posterior-predictive.svg", width: 100%),
   [
     The prior predictive display, now simulated from the posterior.
 
