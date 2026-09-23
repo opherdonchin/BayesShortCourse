@@ -10,7 +10,8 @@
 
 #course-outline()
 
-= A short worked example: dose response
+= A short worked example
+Dose response
 
 == Four doses, twenty animals
 
