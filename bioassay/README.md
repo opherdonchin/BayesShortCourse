@@ -1,8 +1,7 @@
 # Bioassay example
 
-This directory contains two versions of the same PyMC bioassay workflow:
+This directory contains the course bioassay workflow:
 
-- `bioassay_full.ipynb` — a more explanatory, self-contained teaching notebook.
-- `bioassay_lean.ipynb` — the same computational workflow with much less lecture-style prose.
+- `bioassay.ipynb` — the compact worked example used for teaching and slide figures.
 
-Both notebooks use the current PyMC 6 / modular ArviZ workflow and include an **Open in Colab** button.
+The notebook is intended for the current Google Colab PyMC / ArviZ environment and includes an **Open in Colab** button.
