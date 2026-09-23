@@ -1,6 +1,6 @@
 # Golf putting example
 
-This directory turns the golf-putting case study from Gelman et al.'s *Bayesian Workflow* into a sequence of short PyMC notebooks. Each notebook is standalone and repeats the workflow for one model: prior predictive checking, fitting, computational diagnostics, posterior predictive criticism, and a decision to revise or stop.
+This directory turns the golf-putting case study from Gelman et al.'s *Bayesian Workflow* into a sequence of short PyMC notebooks. Each notebook is standalone and repeats the workflow for one model: prior predictive checking, fitting, computational diagnostics, inspection of the posterior mean relationship, posterior predictive checking, structural criticism, and a decision to revise or stop. Distance is treated throughout as a continuous predictor; related prior/posterior plots use the same continuous graphical grammar.
 
 ## Recommended teaching path
 
