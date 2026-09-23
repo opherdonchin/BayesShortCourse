@@ -2,6 +2,12 @@
 
 This repository contains teaching materials for a short practical course in Bayesian analysis. Preserve the pedagogical sequence, keep the statistical model visible, and prefer clear, idiomatic PyMC/ArviZ workflows over custom implementations.
 
+## Slide authoring
+
+Before creating or editing slides, read and follow `Slides/slide-authoring.md`.
+
+Use `Slides/course.typ` for shared presentation setup and keep the teaching narrative in `Slides/slide_deck.typ`. Do not transplant conventions, components, or infrastructure from other courses unless they clearly serve this short course. When changing the shared slide template, inspect the rendered deck afterward because template changes can affect every slide.
+
 ## PyMC / ArviZ skills
 
 Before editing PyMC, PyTensor, ArviZ, prior-predictive, posterior-predictive, diagnostic, or other Bayesian-analysis code, load and follow the relevant skills from the PyMC Labs `pymc-modeling` skills repository:
