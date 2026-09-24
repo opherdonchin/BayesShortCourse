@@ -13,6 +13,9 @@
   date: [24–25 September 2026],
 )
 
+// Compile with `--input handout=true` for a one-page-per-slide PDF.
+#let handout-mode = sys.inputs.at("handout", default: "false") == "true"
+
 #let short-course-theme(body) = {
   show: metropolis-theme.with(
     aspect-ratio: "16-9",
@@ -23,6 +26,7 @@
       date: course.date,
     ),
     config-colors(primary: rgb("#eb811b")),
+    config-common(handout: handout-mode),
   )
 
   set text(size: 22pt)
