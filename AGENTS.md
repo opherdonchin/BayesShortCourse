@@ -30,12 +30,13 @@ Prefer current native PyMC and ArviZ functionality documented by those skills ov
 
 ## Google Colab environment
 
-- Jupyter notebooks are intended primarily for Google Colab.
-- Target the current Colab Python/PyMC/ArviZ environment.
-- Use the packages already provided by Colab. Do not add `pip install`, `%pip install`, or other package-installation steps to teaching notebooks.
-- Do not pin package versions in teaching notebooks.
-- If a future incompatibility appears, first update the notebook to the current Colab/PyMC/ArviZ APIs rather than installing or freezing a different environment. Ask for explicit user approval before adding any package installation or temporary pin.
-- Do not replace a working Colab environment merely to match versions used elsewhere.
+- Google Colab is the supported runtime for the teaching notebooks.
+- Bayesian teaching notebooks install the repository's tested PyMC/ArviZ toolchain at the beginning, before any imports. The current course-wide pins are `pymc==6.3.2`, `arviz-base==1.3.0`, `arviz-stats==1.3.2`, and `arviz-plots[matplotlib]==1.3.1`.
+- Pin rapidly evolving Bayesian packages because major PyMC and ArviZ releases can involve breaking API changes. Do not rewrite working course code to match older versions bundled by Colab.
+- Keep the override minimal: use the normal Colab environment for general scientific Python packages and do not freeze NumPy, pandas, Matplotlib, or the entire environment unless fresh-Colab testing shows that an additional constraint is necessary.
+- Pin notebook-specific Bayesian dependencies only where they are used. `precourse_notebook.ipynb` additionally pins `preliz==0.28.0`; `bioassay/bioassay.ipynb` additionally pins the Bambi version used by its Bambi section. Do not add the Bayesian stack to notebooks such as `precourse_data_simulator.ipynb` that do not use it.
+- Update package versions deliberately as a course-wide maintenance task, not casually notebook by notebook. When pins change, rerun every affected notebook from top to bottom in a fresh Colab runtime, inspect diagnostics and plots, and save outputs from the final code.
+- Software versioning is itself pedagogically relevant: when discussing computational Bayesian notebooks, note that PyMC and ArviZ are actively developed and that reproducible analysis includes recording and testing the software environment.
 - Notebooks should run top-to-bottom from a fresh Colab runtime without relying on hidden state or execution out of order.
 - Keep setup and imports near the beginning of the notebook.
 - Use a fixed random seed for stochastic examples unless randomness itself is part of the lesson.

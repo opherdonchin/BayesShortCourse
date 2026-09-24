@@ -218,21 +218,126 @@ The bands show uncertainty about the mean number of deaths.
 
 = The Bayesian toolkit
 
-== Probability distributions as model components
+// Logos and screenshots in images/: logos from each project's GitHub
+// repository; screenshots of the linked sites; covers from the authors' book
+// pages.
+#let web(url) = text(size: 14pt, fill: gray, url)
 
-== Posterior draws as a computational object
+#let tool(logo, role, url) = align(center, stack(
+  spacing: 0.4em,
+  box(height: 2.2cm, logo),
+  text(size: 20pt, role),
+  web(url),
+))
 
-== Prior predictive, posterior, and posterior predictive simulation
+== Four libraries, one workflow
 
-== Diagnostics before interpretation
+#grid(
+  columns: (1fr, 1fr),
+  row-gutter: 1.2em,
+  column-gutter: 1.5em,
+  tool(image("images/logo_pymc.svg", height: 100%), [Write the model, sample the posterior], "pymc.io"),
+  tool(image("images/logo_arviz.png", height: 100%), [Diagnose, summarize, and plot], "python.arviz.org"),
+  tool(image("images/logo_preliz.png", height: 100%), [Choose and check priors], "preliz.readthedocs.io"),
+  tool(image("images/logo_bambi.png", height: 100%), [Regression models from a formula], "bambinos.github.io/bambi"),
+)
+
+== Bambi: the same model as one formula
+
+// A bare-bones version of section "## 8. Bambi" of bioassay/bioassay.ipynb.
+#grid(
+  columns: (1.8fr, 1fr),
+  column-gutter: 0.8em,
+  align: horizon,
+  [
+    #show raw.where(block: true): set text(size: 14pt)
+    ```python
+    priors = {
+        "Intercept": bmb.Prior("Normal", mu=0, sigma=5),
+        "dose": bmb.Prior("HalfNormal", sigma=5),
+    }
+    model = bmb.Model("p(deaths, n) ~ dose", data,
+                      family="binomial", priors=priors)
+    idata = model.fit()
+    bmb.interpret.plot_predictions(model, idata, "dose")
+    ```
+  ],
+  // Saved by section "## 8. Bambi" of bioassay/bioassay.ipynb.
+  uncover("2-", image("figures/bioassay_bambi.svg", width: 100%)),
+)
+
+#speaker-note[
+  Same priors, same posterior as the PyMC model: Bambi writes the PyMC model
+  for us. Its plot evaluates the fitted curve on a fine grid of doses.
+]
+
+== Coding assistants can learn current PyMC practice
+
+#grid(
+  columns: (1.5fr, 1fr),
+  column-gutter: 1.2em,
+  align: horizon,
+  [
+    #image("images/site_pymc-modeling.png", width: 100%)
+    #align(center, web("github.com/pymc-labs/pymc-modeling"))
+  ],
+  [
+    Skill files from PyMC Labs that teach AI coding assistants current PyMC
+    and ArviZ practice.
+
+    We used them to build this course's notebooks.
+  ],
+)
+
+== Where to ask, hire, and listen
+
+#let place(shot, role, url) = align(center, stack(
+  spacing: 0.5em,
+  image(shot, width: 100%),
+  text(size: 20pt, role),
+  web(url),
+))
+
+#grid(
+  columns: (1fr, 1fr, 1fr),
+  column-gutter: 1em,
+  place("images/site_discourse.png", [*Ask:* PyMC Discourse], "discourse.pymc.io"),
+  place("images/site_pymc-labs.png", [*Hire:* PyMC Labs], "pymc-labs.com"),
+  place("images/site_lbs.png", [*Listen:* Learning Bayesian Statistics], "learnbayesstats.com"),
+)
+
+== Books worth reading next
+
+#let book(cover, authors, title) = align(center, stack(
+  spacing: 0.4em,
+  box(height: 6.5cm, image(cover, height: 100%)),
+  text(size: 15pt, authors),
+  text(size: 15pt, style: "italic", title),
+))
+
+#grid(
+  columns: 5,
+  column-gutter: 0.8em,
+  book("images/cover_rethinking.png", [McElreath], [Statistical Rethinking]),
+  book("images/cover_ros.png", [Gelman, Hill & Vehtari], [Regression and Other Stories]),
+  book("images/cover_active-statistics.jpg", [Gelman & Vehtari], [Active Statistics]),
+  book("images/cover_bap.png", [Martin], [Bayesian Analysis with Python]),
+  book("images/cover_bayesian-workflow.png", [Gelman, Vehtari et al.], [Bayesian Workflow]),
+)
 
 = The Bayesian workflow
 
-== Build → simulate → fit → check → revise
+== The spine
 
-== Model checking: where does the model fail?
+// The spine of the workflow is a loop: data, model, fit, interpret with arrows back to model and data. I want  you to draw the spine as a series of steps along the width of the slide with arrows pointing back to the model and data steps. Each step should be represented by a box with a label, and the boxes should be evenly spaced across the slide. The color scheme should match the course theme, with primary colors used for the boxes and arrows. The only text needed beyond what is inherent in the boxes is to say "Even at this level, the assumption is that there may be:" and then subpoints: "Different interpretations" and "Iterative experimental design." The spine figure should probably be a seperately drawn diagram that is imported into the slide deck, rather than being drawn directly in the slide deck code. The diagram should be clear and visually appealing, with a consistent style that matches the rest of the course materials. The slide should reveal each step in sequence and finish with the text.
 
-== Model revision is part of the analysis
+== The checks
+
+// The spine diagram should be extended so that we show the following steps: Prior predictive (above or below model), Diagnostics (above or below fit), and Posterior predictive (the other direction from fit). Each box is pointed to by an arrow from the appropriate step in the spine. The checks should be revealed in sequence with the spine as the base level of the slide. The checks should be visually distinct from the spine, perhaps using a different color or style for the boxes and arrows. The associated steps in the text should be: (base slide) "Validation is important at each step along the spine", (prior predictive) "Prior predictive checks test model coherence", (diagnostics) "Diagnostics determine whether the fitting algorithm converges", (posterior predictive) "Posterior predictive checks evaluate model fit to the data".
+
+== What to fix when things go wrong
+
+// Arrows from each of the check boxes, again revealed in sequence. Prior predictive points back to model and data. Diagnostics points back to fit and model. Posterior proedictive points back to model and data. The associated steps in the text should be: (base slide) "When a check fails, we need to fix something", (prior predictive) "Prior predictive failures suggest we need to think more about what is going on", (diagnostics) "Diagnostic failures can result from problems with modeling or computation", (posterior predictive) "Posterior predictive failures require reassessing the model".
 
 = Working through the workflow: golf putting
 

@@ -25,6 +25,8 @@ The book later explores simplified discrepancy models and PSIS-LOO model compari
 
 Every notebook loads these files from the public raw URL of this repository, so it runs directly in Colab without relying on a local checkout.
 
+Each notebook installs the same tested PyMC and modular ArviZ versions at the beginning. The course pins this rapidly evolving Bayesian stack for reproducibility instead of relying on whichever versions Colab currently bundles.
+
 ## Sources
 
 - Gelman et al. (2026), *Bayesian Workflow*, Ch. 25, “Model building and expansion: Golf putting.”
