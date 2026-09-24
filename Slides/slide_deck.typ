@@ -858,7 +858,7 @@ with pm.Model() as model:
   columns: (1.55fr, 0.75fr),
   column-gutter: 1.0em,
   align: horizon,
-  image("figures/sleepstudy_data.svg", width: 100%),
+  image("figures/01_linear_baseline_data.svg", width: 100%),
   [
     #set text(size: 14pt)
     #uncover("2-")[
