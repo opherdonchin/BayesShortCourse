@@ -1,6 +1,7 @@
 #import "course.typ": *
 #import "diagrams/bioassay_model.typ": bioassay-model-graph
 #import "diagrams/bayesian_workflow.typ": workflow-diagram
+#import "diagrams/golf_geometry.typ": golf-geometry
 
 #show: short-course-theme
 
@@ -413,15 +414,270 @@ The bands show uncertainty about the mean number of deaths.
     that matters scientifically before expanding the model.
 ]
 
+== Model comparison asks which useful story predicts best
+
+#let comparison-box(label, strong: false) = block(
+  width: 100%,
+  inset: (x: 0.55em, y: 0.45em),
+  radius: 5pt,
+  fill: if strong { rgb("#eb811b").lighten(82%) } else { rgb("#4f7d8a").lighten(88%) },
+  stroke: 1pt + if strong { rgb("#eb811b") } else { rgb("#4f7d8a") },
+  align(center, text(size: 15pt, weight: "semibold", label)),
+)
+
+#let loo-table = table(
+  columns: (1.25fr, 0.9fr, 0.65fr, 0.8fr),
+  align: (left, right, right, right),
+  inset: (x: 0.38em, y: 0.32em),
+  stroke: none,
+  fill: (x, y) => if y == 3 { rgb("#eb811b").lighten(88%) } else { none },
+  table.hline(stroke: 1pt),
+  table.header[*Model*][*LOO*][*SE*][*$Delta$LOO*],
+  table.hline(stroke: 0.5pt),
+  [Model 1], [-124.8], [4.5], [13.0],
+  [Model 2], [-112.4], [0.3], [0.6],
+  [Model 3], [*-111.8*], [--], [*0.0*],
+  table.hline(stroke: 1pt),
+)
+
+#grid(
+  columns: (1.15fr, auto, 1.15fr, auto, 2.25fr),
+  column-gutter: 0.55em,
+  align: horizon,
+  stack(
+    spacing: 0.45em,
+    comparison-box([Plausible model 1]),
+    comparison-box([Plausible model 2]),
+    comparison-box([Plausible model 3]),
+  ),
+  text(size: 26pt, fill: rgb("#eb811b"))[$arrow.r$],
+  comparison-box([Model comparison], strong: true),
+  text(size: 26pt, fill: rgb("#eb811b"))[$arrow.r$],
+  align(center, stack(
+    spacing: 0.4em,
+    text(size: 15pt, weight: "semibold")[Leave-one-out cross-validation],
+    loo-table,
+    text(size: 11pt, fill: gray)[illustrative values; larger LOO is better],
+  )),
+)
+
+#set text(size: 0.72em)
+#grid(
+  columns: (1fr, 1fr),
+  column-gutter: 1.2em,
+  row-gutter: 0.25em,
+  [The workflow can lead to several *plausible models* with different interpretations.],
+  [Model comparison is an essential tool in Bayesian data analysis.],
+  [It is also a useful way to think about frequentist “null models.”],
+  [*All models are wrong; some models are informative.*],
+)
+
+#speaker-note[
+  The workflow rarely hands us one uniquely correct model. It often produces
+  several scientifically plausible stories, and leave-one-out comparison asks
+  how well each story predicts unseen observations. The uncertainty in the
+  difference matters: a tiny difference relative to its standard error is not
+  a decisive ranking. A frequentist null model can be treated as one more
+  substantive competitor rather than as a privileged default.
+]
+
 = Working through the workflow: golf putting
 
-== Model 1: a logistic curve for putting success
+== Two putting datasets let us fit, then genuinely predict
 
-== Model 2: geometry of aiming error
+#let putting-data-state(show-broadie: false) = {
+  grid(
+    columns: (0.82fr, 1.55fr),
+    column-gutter: 1.0em,
+    align: horizon,
+    [
+      #image(
+        "images/golf_putting_ink.png",
+        width: 100%,
+        alt: "Ink illustration of a golfer putting toward a nearby hole",
+      )
+      #text(size: 10pt, fill: gray)[AI-generated course illustration]
 
-== A model can fit and still predict badly
+      #set text(size: 11pt)
+      Berry (1996): professional putting summaries at rounded distances from 2 to 20 feet.
 
-== New data: a test we did not tune for
+      #if show-broadie [
+        Broadie (2018): a later, much larger dataset extending to 75 feet.
+      ]
+    ],
+    stack(
+      spacing: 0.45em,
+      image("figures/01_logistic_baseline_setup.svg", width: 100%),
+      if show-broadie {
+        image("figures/02_angle_geometry_external-check-on-newer-data.svg", width: 100%)
+      },
+    ),
+  )
+}
+
+#alternatives(
+  putting-data-state(),
+  putting-data-state(show-broadie: true),
+)
+
+#speaker-note[
+  Begin with the small Berry dataset used in the original putting example:
+  successes and attempts at each rounded distance from two to twenty feet.
+  Then reveal Broadie's much larger and longer-range dataset. The second set is
+  not merely more data for fitting; it gives us an honest external test of a
+  model developed on the first dataset.
+]
+
+== Start simple: logistic regression shows what remains unexplained
+
+#grid(
+  columns: (0.92fr, 1.45fr),
+  column-gutter: 0.9em,
+  align: horizon,
+  [
+    #align(center)[
+      $
+        y_j & tilde "Binomial"(n_j, p_j) \
+        "logit"(p_j) & = alpha + beta x_j
+      $
+    ]
+    #block[
+      #set text(size: 12.5pt)
+      #show raw.where(block: true): set text(size: 12.5pt)
+```python
+with pm.Model() as model:
+    alpha = pm.Normal("alpha", 0, 3)
+    beta = pm.Normal("beta", 0, 0.5)
+    logit_p = alpha + beta * distance
+    pm.Binomial(
+        "made", n=attempts,
+        logit_p=logit_p,
+        observed=made,
+    )
+```
+    ]
+  ],
+  image("figures/01_logistic_baseline_posterior-fit.svg", width: 100%),
+)
+
+#set text(size: 0.68em)
+#grid(
+  columns: (1fr, 1fr, 1fr),
+  column-gutter: 0.8em,
+  [*Start simple.* It is usually best to begin with the smallest useful model.],
+  [Prior and posterior predictive checks develop intuition for what it can generate.],
+  [What it does and does not capture tells us how much remains to explain.],
+)
+
+#speaker-note[
+  Logistic regression is deliberately generic: it captures a smooth decline
+  without claiming why distance matters. That makes it an excellent first
+  model. Prior predictive simulation reveals the implications of its priors;
+  posterior predictive simulation reveals which features remain unexplained.
+  The point is not to stop here, but to establish a transparent baseline.
+]
+
+== Geometry turns distance into a success probability
+
+#grid(
+  columns: (1.18fr, 1fr),
+  column-gutter: 1.0em,
+  align: horizon,
+  [
+    #golf-geometry
+    #align(center, text(size: 12pt, fill: gray)[
+      Redrawn from Gelman et al., _Bayesian Workflow_, Fig. 25.3
+    ])
+  ],
+  [
+    #align(center)[
+      $
+        theta(x) & = arcsin((R-r) / x) \
+        p(x) & = 2 Phi(theta(x) / sigma) - 1
+      $
+    ]
+
+    #set text(size: 0.78em)
+    - A highly simplified model of putting physics
+    - The only parameter is noise in the aiming angle, $sigma$
+    - These counts overwhelm almost any reasonable prior
+    - It is still healthy to ask what a reasonable prior implies
+  ],
+)
+
+#speaker-note[
+  The geometry says that the farther the ball is from the cup, the narrower the
+  acceptable launch-angle cone becomes. Assume the actual launch angle is
+  normally distributed around the intended line. Then a single parameter—the
+  angular standard deviation—determines success probability at every distance.
+  The dataset is informative enough that broad sensible priors give nearly the
+  same posterior, but prior predictive reasoning is still part of the workflow.
+]
+
+== One angular-noise parameter fits the original data remarkably well
+
+#grid(
+  columns: (0.88fr, 1.48fr),
+  column-gutter: 0.9em,
+  align: horizon,
+  [
+    #block[
+      #set text(size: 12.2pt)
+      #show raw.where(block: true): set text(size: 12.2pt)
+```python
+with pm.Model() as model:
+    sigma_deg = pm.LogNormal(
+        "sigma_deg", log(2), 0.7
+    )
+    theta = pm.math.arcsin(
+        (cup_radius - ball_radius)
+        / distance
+    )
+    p = 2 * pm.math.invprobit(
+        theta / deg2rad(sigma_deg)
+    ) - 1
+    pm.Binomial(
+        "made", n=attempts,
+        p=p, observed=made,
+    )
+```
+    ]
+  ],
+  image("figures/02_angle_geometry_posterior-fit.svg", width: 100%),
+)
+
+#speaker-note[
+  This is the payoff from using scientific structure. The code is only slightly
+  more complicated than logistic regression, yet one interpretable parameter
+  governs the entire curve. The fit to the Berry data is strong, so at this
+  stage the angle-only model looks like an economical explanation.
+]
+
+== A trusted model earns a harder test on new data
+
+#grid(
+  columns: (1.65fr, 0.75fr),
+  column-gutter: 1.0em,
+  align: horizon,
+  image("figures/02_angle_geometry_external-check-on-newer-data_2.svg", width: 100%),
+  [
+    #text(size: 0.92em, weight: "semibold")[
+      When we have faith in a model, we can test it against new data as those
+      data become available.
+    ]
+  ],
+)
+
+#align(bottom + right, text(size: 12pt, fill: gray)[
+  Data: Broadie (2018); comparison follows _Bayesian Workflow_, §25.3
+])
+
+#speaker-note[
+  Do not refit yet. Carry the posterior learned from the Berry data forward and
+  predict the Broadie observations. Short putts are made more often than the old
+  model predicts, while long putts are made less often. That structured failure
+  is scientifically useful: it tells us exactly what the next model must add.
+]
 
 == Model 3: angle error plus distance error
 
