@@ -363,6 +363,7 @@ The bands show uncertainty about the mean number of deaths.
   workflow-diagram(spine-stage: 5, check-stage: 3, reserve-checks: true),
 )
 
+#[  // keep this text size on this slide only
 #set text(size: 0.82em)
 
 #grid(
@@ -382,6 +383,7 @@ The bands show uncertainty about the mean number of deaths.
   - Posterior predictive: can the fitted model reproduce relevant features of
     what we observed?
 ]
+]
 
 == A failed check tells us where to return
 
@@ -392,6 +394,7 @@ The bands show uncertainty about the mean number of deaths.
   workflow-diagram(spine-stage: 5, check-stage: 3, repair-stage: 3),
 )
 
+#[  // keep this text size on this slide only
 #set text(size: 0.78em)
 
 #grid(
@@ -412,6 +415,7 @@ The bands show uncertainty about the mean number of deaths.
     geometry.
   - Posterior predictive failures are model criticism: identify the mismatch
     that matters scientifically before expanding the model.
+]
 ]
 
 == Model comparison asks which useful story predicts best
@@ -461,6 +465,7 @@ The bands show uncertainty about the mean number of deaths.
   )),
 )
 
+#[  // keep this text size on this slide only
 #set text(size: 0.72em)
 #grid(
   columns: (1fr, 1fr),
@@ -479,6 +484,7 @@ The bands show uncertainty about the mean number of deaths.
   difference matters: a tiny difference relative to its standard error is not
   a decisive ranking. A frequentist null model can be treated as one more
   substantive competitor rather than as a privileged default.
+]
 ]
 
 = Working through the workflow: golf putting
@@ -530,6 +536,8 @@ The bands show uncertainty about the mean number of deaths.
 
 == Start simple: logistic regression shows what remains unexplained
 
+#[  // keep this text size on this slide only
+#set text(size: 0.68em)
 #grid(
   columns: (0.92fr, 1.45fr),
   column-gutter: 0.9em,
@@ -560,7 +568,6 @@ with pm.Model() as model:
   image("figures/01_logistic_baseline_posterior-fit.svg", width: 100%),
 )
 
-#set text(size: 0.68em)
 #grid(
   columns: (1fr, 1fr, 1fr),
   column-gutter: 0.8em,
@@ -575,6 +582,7 @@ with pm.Model() as model:
   model. Prior predictive simulation reveals the implications of its priors;
   posterior predictive simulation reveals which features remain unexplained.
   The point is not to stop here, but to establish a transparent baseline.
+]
 ]
 
 == Geometry turns distance into a success probability
@@ -679,20 +687,76 @@ with pm.Model() as model:
   is scientifically useful: it tells us exactly what the next model must add.
 ]
 
-== Model 3: angle error plus distance error
+== A new physical model
 
-== When a huge dataset exposes a small model failure
+// This time we should show Figure 25.6 and the equations on pages 392 and 393.
 
-== Model 4: allow the model to be imperfect
+== The aiming + distance model
 
-== A better fit is not necessarily the end
+// The fit in 03_angle_and_distance with the text "An aiming and distance model improves fit and interpretability" "Still consistent fit problems at middle distances"
 
-== Where we stop the golf workflow today
+== The aiming + distance model: have we sampled the posterior?
 
-= Preparing for active learning: sleep deprivation
+#grid(
+  columns: (auto, 1fr),
+  column-gutter: 1.2em,
+  align: horizon,
+  // Saved by section "## Fit and diagnose" of golf/03_angle_and_distance.ipynb.
+  image("figures/03_angle_and_distance_fit-and-diagnose.svg", height: 6.5cm),
+  // Values from the notebook's azs.summary of sigma_angle_deg and sigma_distance.
+  [
+    The chains disagree:
+    - $hat(R) approx 2$
+    - ESS $approx 5$ of 4,000 draws
 
-== Repeated measurements create a multilevel problem
+    #uncover("2-")[We have not sampled the posterior.]
 
-== Average effects and individual trajectories
+    #uncover("3-")[So model fit is not even the question yet.]
 
-== Your workflow for the sleep data
+    #uncover("4-")[A good result: the diagnostics caught it.]
+  ],
+)
+
+#speaker-note[
+  The book hits the same problem with this model (Bayesian Workflow,
+  Section 25.4): high R-hat and low effective sample size, indicating
+  multimodality. Initializing the sampler with Pathfinder fixes it. The
+  divergence count varies between runs (none locally, hundreds in Colab), so
+  the slide quotes only R-hat and ESS.
+]
+
+== Continued improvements
+
+// This is just a text slide with bullet points. Format to fit the presentation. I'm just putting the bullet points here. Do add uncovers appropriately
+
+- Model misfit results from very large distances in logit scale near the hole
+  - Replace the logstic model with a normal model
+  - Wrong but better
+- Try to return to logit model by adding a distance-dependent variance term
+  - Much worse fit
+  - Sometimes a 'truer' model is not better
+- Recover logit model by using proportional rather than additive noise
+  - Then use the new model to discover the true distance parameter
+- Iterative model building should be central to data analysis
+  - Develop intuition
+  - Develop critical approach
+
+= Becoming independent Bayesian analysts
+
+== The sleep deprivation data
+
+// This slide should show the sleep deprivation data with the basic facts about the study and the provenance
+
+== What we will practice
+
+// A bullet point slide with the following points. Format to fit the presentation. Add uncovers appropriately
+
+- Choosing priors
+  - Using common sense
+  - Using prior predictive checks
+  - Practical issues
+- Building hierarchical models 
+  - Separating uncertainty about individuals from uncertainty about the population
+  - Understanding how hierarchical models share information across individual fits
+  - Choosing priors for population- and individual-level parameters
+- Using AI to support Bayesian data analysis
