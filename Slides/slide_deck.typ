@@ -14,6 +14,28 @@
 
 #course-outline()
 
+== Course repository
+
+#align(center + horizon)[
+  #stack(
+    spacing: 0.9em,
+    align(center)[
+      Course notebooks, slides, and data
+    ],
+    align(center)[
+      #link("https://github.com/opherdonchin/BayesShortCourse")[
+        #text(size: 22pt, weight: "semibold", fill: rgb("#eb811b"))[
+          github.com/opherdonchin/BayesShortCourse
+        ]
+      ]
+    ],
+  )
+]
+
+#speaker-note[
+  The displayed URL is an active link to the public course repository.
+]
+
 = A short worked example
 Dose response
 
@@ -445,7 +467,7 @@ The bands show uncertainty about the mean number of deaths.
   table.hline(stroke: 1pt),
 )
 
-#grid(
+#let comparison-state(stage) = grid(
   columns: (1.15fr, auto, 1.15fr, auto, 2.25fr),
   column-gutter: 0.55em,
   align: horizon,
@@ -457,25 +479,32 @@ The bands show uncertainty about the mean number of deaths.
   ),
   text(size: 26pt, fill: rgb("#eb811b"))[$arrow.r$],
   comparison-box([Model comparison], strong: true),
-  text(size: 26pt, fill: rgb("#eb811b"))[$arrow.r$],
-  align(center, stack(
-    spacing: 0.4em,
-    text(size: 15pt, weight: "semibold")[Leave-one-out cross-validation],
-    loo-table,
-    text(size: 11pt, fill: gray)[illustrative values; larger LOO is better],
-  )),
+  if stage >= 3 { text(size: 26pt, fill: rgb("#eb811b"))[$arrow.r$] },
+  if stage >= 3 {
+    align(center, stack(
+      spacing: 0.4em,
+      text(size: 15pt, weight: "semibold")[Leave-one-out cross-validation],
+      loo-table,
+      text(size: 11pt, fill: gray)[illustrative values; larger LOO is better],
+    ))
+  },
+)
+
+#alternatives(
+  comparison-state(1),
+  comparison-state(2),
+  comparison-state(3),
+  comparison-state(4),
 )
 
 #[  // keep this text size on this slide only
 #set text(size: 0.72em)
-#grid(
-  columns: (1fr, 1fr),
-  column-gutter: 1.2em,
-  row-gutter: 0.25em,
+#stack(
+  spacing: 0.25em,
   [The workflow can lead to several *plausible models* with different interpretations.],
-  [Model comparison is an essential tool in Bayesian data analysis.],
-  [It is also a useful way to think about frequentist “null models.”],
-  [*All models are wrong; some models are informative.*],
+  uncover("2-")[It is also a useful way to think about frequentist “null models.”],
+  uncover("3-")[Model comparison is a basic tool in Bayesian data analysis.],
+  uncover("4-")[*All models are wrong; some models are informative.*],
 )
 
 #speaker-note[
@@ -490,7 +519,7 @@ The bands show uncertainty about the mean number of deaths.
 
 = Working through the workflow: golf putting
 
-== Two putting datasets let us fit, then genuinely predict
+== The data
 
 #let putting-data-state(show-broadie: false) = {
   grid(
@@ -535,7 +564,7 @@ The bands show uncertainty about the mean number of deaths.
   model developed on the first dataset.
 ]
 
-== Start simple: logistic regression shows what remains unexplained
+== Starting with a simple model is easy and informative
 
 #[  // keep this text size on this slide only
 #set text(size: 0.68em)
@@ -566,15 +595,14 @@ with pm.Model() as model:
 ```
     ]
   ],
-  image("figures/01_logistic_baseline_posterior-fit.svg", width: 100%),
+  uncover("2-", image("figures/01_logistic_baseline_posterior-fit.svg", width: 100%)),
 )
 
 #grid(
-  columns: (1fr, 1fr, 1fr),
+  columns: (1fr, 1fr),
   column-gutter: 0.8em,
-  [*Start simple.* It is usually best to begin with the smallest useful model.],
-  [Prior and posterior predictive checks develop intuition for what it can generate.],
-  [What it does and does not capture tells us how much remains to explain.],
+  uncover("3-")[Prior and posterior predictive checks develop intuition for what it can generate.],
+  uncover("4-")[What it does and does not capture tells us how much remains to explain.],
 )
 
 #speaker-note[
@@ -607,10 +635,10 @@ with pm.Model() as model:
     ]
 
     #set text(size: 0.78em)
-    - A highly simplified model of putting physics
-    - The only parameter is noise in the aiming angle, $sigma$
-    - These counts overwhelm almost any reasonable prior
-    - It is still healthy to ask what a reasonable prior implies
+    #uncover("2-")[- A highly simplified model of putting physics]
+    #uncover("3-")[- The only parameter is noise in the aiming angle, $sigma$]
+    #uncover("4-")[- These counts overwhelm almost any reasonable prior]
+    #uncover("5-")[- It is still healthy to ask what a reasonable prior implies]
   ],
 )
 
@@ -623,7 +651,7 @@ with pm.Model() as model:
   same posterior, but prior predictive reasoning is still part of the workflow.
 ]
 
-== One angular-noise parameter fits the original data remarkably well
+== The aiming error model
 
 #grid(
   columns: (0.88fr, 1.48fr),
@@ -652,7 +680,7 @@ with pm.Model() as model:
 ```
     ]
   ],
-  image("figures/02_angle_geometry_posterior-fit.svg", width: 100%),
+  uncover("2-", image("figures/02_angle_geometry_posterior-fit.svg", width: 100%)),
 )
 
 #speaker-note[
@@ -662,14 +690,14 @@ with pm.Model() as model:
   stage the angle-only model looks like an economical explanation.
 ]
 
-== A trusted model earns a harder test on new data
+== The aiming error model on new data
 
 #grid(
   columns: (1.65fr, 0.75fr),
   column-gutter: 1.0em,
   align: horizon,
   image("figures/02_angle_geometry_external-check-on-newer-data_2.svg", width: 100%),
-  [
+  uncover("2-")[
     #text(size: 0.92em, weight: "semibold")[
       When we have faith in a model, we can test it against new data as those
       data become available.
@@ -688,7 +716,7 @@ with pm.Model() as model:
   is scientifically useful: it tells us exactly what the next model must add.
 ]
 
-== A putt must have the right direction _and_ the right distance
+== A new physical model
 
 #grid(
   columns: (1fr, 1.12fr),
@@ -733,7 +761,7 @@ with pm.Model() as model:
   scale parameter rather than an arbitrary curve adjustment.
 ]
 
-== The expanded model appears to improve fit and interpretability
+== The aiming + distance model
 
 #grid(
   columns: (1.48fr, 0.82fr),
@@ -742,20 +770,22 @@ with pm.Model() as model:
   image("figures/03_angle_and_distance_posterior-fit.svg", width: 100%),
   [
     #text(size: 14pt)[
-      An aiming and distance model improves fit and interpretability.
+      #uncover("2-")[An aiming and distance model improves fit and interpretability.]
 
       #v(0.7em)
-      *Still:* consistent fit problems remain at middle distances.
+      #uncover("3-")[*Still:* consistent fit problems remain at middle distances.]
     ]
 
     #v(0.9em)
-    #block(
-      inset: 0.55em,
-      radius: 5pt,
-      fill: rgb("#4f7d8a").lighten(91%),
-      stroke: 1pt + rgb("#4f7d8a"),
-      text(size: 12pt)[A plausible curve is not yet a trustworthy posterior.],
-    )
+    #uncover("4-")[
+      #block(
+        inset: 0.55em,
+        radius: 5pt,
+        fill: rgb("#4f7d8a").lighten(91%),
+        stroke: 1pt + rgb("#4f7d8a"),
+        text(size: 12pt)[A plausible curve is not yet a trustworthy posterior.],
+      )
+    ]
   ],
 )
 
@@ -785,8 +815,6 @@ with pm.Model() as model:
     #uncover("2-")[We have not sampled the posterior.]
 
     #uncover("3-")[So model fit is not even the question yet.]
-
-    #uncover("4-")[A good result: the diagnostics caught it.]
   ],
 )
 
@@ -800,50 +828,18 @@ with pm.Model() as model:
 
 == Each failed check suggests the next model—not the final model
 
-#let revision-card(number, title, body, accent: rgb("#4f7d8a")) = block(
-  width: 100%,
-  height: 100%,
-  inset: 0.65em,
-  radius: 6pt,
-  fill: accent.lighten(91%),
-  stroke: 1pt + accent,
-  stack(
-    spacing: 0.35em,
-    text(size: 11pt, weight: "semibold", fill: accent)[STEP #number],
-    text(size: 15pt, weight: "semibold")[#title],
-    text(size: 12pt)[#body],
-  ),
-)
+#[
+#set text(size: 0.9em)
+#set par(leading: 0.8em)
 
-#grid(
-  columns: (1fr, 1fr),
-  rows: (1fr, 1fr),
-  column-gutter: 0.65em,
-  row-gutter: 0.65em,
-  revision-card(
-    "1",
-    [Absorb local mismatch],
-    [Huge short-putt counts dominate on the logit scale. Replace the Binomial with a Normal discrepancy model: *wrong, but better.*],
-  ),
-  uncover("2-", revision-card(
-    "2",
-    [Try a “truer” correction],
-    [Add distance-dependent variance on the logit scale. The fit becomes *much worse*: realism alone does not guarantee usefulness.],
-    accent: rgb("#a35b32"),
-  )),
-  uncover("3-", revision-card(
-    "3",
-    [Change the discrepancy scale],
-    [Use proportional rather than additive noise. The mechanism becomes usable enough to learn the distance-tolerance parameter.],
-    accent: rgb("#687a3a"),
-  )),
-  uncover("4-", revision-card(
-    "4",
-    [Keep iterating critically],
-    [Model building develops intuition—and the habit of asking what each apparent improvement actually explains.],
-    accent: rgb("#eb811b"),
-  )),
-)
+- *Absorb local mismatch.* Huge short-putt counts dominate on the logit scale. Replace the Binomial with a Normal discrepancy model: *wrong, but better.*
+
+#uncover("2-")[- *Try a “truer” correction.* Add distance-dependent variance on the logit scale. The fit becomes *much worse*: realism alone does not guarantee usefulness.]
+
+#uncover("3-")[- *Change the discrepancy scale.* Use proportional rather than additive noise. The mechanism becomes usable enough to learn the distance-tolerance parameter.]
+
+#uncover("4-")[- *Keep iterating critically.* Model building develops intuition—and the habit of asking what each apparent improvement actually explains.]
+]
 
 #speaker-note[
   Compress the rest of the notebook sequence into four decisions rather than a
@@ -865,18 +861,22 @@ with pm.Model() as model:
   image("figures/sleepstudy_data.svg", width: 100%),
   [
     #set text(size: 14pt)
-    *180 observations*
-    - 18 participants
-    - 10 daily averages each
+    #uncover("2-")[
+      *180 observations*
+      - 18 participants
+      - 10 daily averages each
+    ]
 
-    *Most sleep-restricted group*
-    - 3 hours time in bed per night
-    - Days 0–1: adaptation and training
-    - Day 2: baseline
-    - Restriction begins after day 2
+    #uncover("3-")[
+      *Most sleep-restricted group*
+      - 3 hours time in bed per night
+      - Days 0–1: adaptation and training
+      - Day 2: baseline
+      - Restriction begins after day 2
+    ]
 
     #v(0.5em)
-    The population trend is clear—yet participants differ in both baseline and change.
+    #uncover("4-")[The population trend is clear—yet participants differ in both baseline and change.]
   ],
 )
 
