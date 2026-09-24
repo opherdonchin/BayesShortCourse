@@ -1,5 +1,6 @@
 #import "course.typ": *
 #import "diagrams/bioassay_model.typ": bioassay-model-graph
+#import "diagrams/bayesian_workflow.typ": workflow-diagram
 
 #show: short-course-theme
 
@@ -327,17 +328,90 @@ The bands show uncertainty about the mean number of deaths.
 
 = The Bayesian workflow
 
-== The spine
+== The workflow starts with a four-step loop
 
-// The spine of the workflow is a loop: data, model, fit, interpret with arrows back to model and data. I want  you to draw the spine as a series of steps along the width of the slide with arrows pointing back to the model and data steps. Each step should be represented by a box with a label, and the boxes should be evenly spaced across the slide. The color scheme should match the course theme, with primary colors used for the boxes and arrows. The only text needed beyond what is inherent in the boxes is to say "Even at this level, the assumption is that there may be:" and then subpoints: "Different interpretations" and "Iterative experimental design." The spine figure should probably be a seperately drawn diagram that is imported into the slide deck, rather than being drawn directly in the slide deck code. The diagram should be clear and visually appealing, with a consistent style that matches the rest of the course materials. The slide should reveal each step in sequence and finish with the text.
+#alternatives(
+  workflow-diagram(spine-stage: 1),
+  workflow-diagram(spine-stage: 2),
+  workflow-diagram(spine-stage: 3),
+  workflow-diagram(spine-stage: 4),
+  workflow-diagram(spine-stage: 5),
+)
 
-== The checks
+#uncover("5-")[
+  #align(center)[
+    Even at this level, we allow for
 
-// The spine diagram should be extended so that we show the following steps: Prior predictive (above or below model), Diagnostics (above or below fit), and Posterior predictive (the other direction from fit). Each box is pointed to by an arrow from the appropriate step in the spine. The checks should be revealed in sequence with the spine as the base level of the slide. The checks should be visually distinct from the spine, perhaps using a different color or style for the boxes and arrows. The associated steps in the text should be: (base slide) "Validation is important at each step along the spine", (prior predictive) "Prior predictive checks test model coherence", (diagnostics) "Diagnostics determine whether the fitting algorithm converges", (posterior predictive) "Posterior predictive checks evaluate model fit to the data".
+    #text(size: 0.9em)[*different interpretations* · *iterative experimental design*]
+  ]
+]
 
-== What to fix when things go wrong
+#speaker-note[
+  - Reveal the spine one step at a time: data, model, fit, interpretation.
+  - The return arrows matter: interpretation can change the model, while a new
+    interpretation or experiment can change what data we collect.
+  - End by naming the two kinds of iteration without expanding them yet.
+]
 
-// Arrows from each of the check boxes, again revealed in sequence. Prior predictive points back to model and data. Diagnostics points back to fit and model. Posterior proedictive points back to model and data. The associated steps in the text should be: (base slide) "When a check fails, we need to fix something", (prior predictive) "Prior predictive failures suggest we need to think more about what is going on", (diagnostics) "Diagnostic failures can result from problems with modeling or computation", (posterior predictive) "Posterior predictive failures require reassessing the model".
+== Checks make each transition accountable
+
+#alternatives(
+  workflow-diagram(spine-stage: 5, reserve-checks: true),
+  workflow-diagram(spine-stage: 5, check-stage: 1, reserve-checks: true),
+  workflow-diagram(spine-stage: 5, check-stage: 2, reserve-checks: true),
+  workflow-diagram(spine-stage: 5, check-stage: 3, reserve-checks: true),
+)
+
+#set text(size: 0.82em)
+
+#grid(
+  columns: 2,
+  column-gutter: 1.2em,
+  row-gutter: 0.35em,
+  [*Validation* belongs at each step], [],
+  uncover("2-")[*Prior predictive*], uncover("2-")[tests model coherence],
+  uncover("3-")[*Diagnostics*], uncover("3-")[test whether fitting converged],
+  uncover("4-")[*Posterior predictive*], uncover("4-")[tests fit to the observed data],
+)
+
+#speaker-note[
+  - Keep the spine visible while adding one check at a time.
+  - Prior predictive: can the assumptions generate plausible data before we fit?
+  - Diagnostics: did the fitting algorithm explore the posterior reliably?
+  - Posterior predictive: can the fitted model reproduce relevant features of
+    what we observed?
+]
+
+== A failed check tells us where to return
+
+#alternatives(
+  workflow-diagram(spine-stage: 5, check-stage: 3),
+  workflow-diagram(spine-stage: 5, check-stage: 3, repair-stage: 1),
+  workflow-diagram(spine-stage: 5, check-stage: 3, repair-stage: 2),
+  workflow-diagram(spine-stage: 5, check-stage: 3, repair-stage: 3),
+)
+
+#set text(size: 0.78em)
+
+#grid(
+  columns: (1.15fr, 2.85fr),
+  column-gutter: 1.0em,
+  row-gutter: 0.28em,
+  [*A failed check*], [means something must change],
+  uncover("2-")[*Prior predictive*], uncover("2-")[revisit assumptions about the model or data],
+  uncover("3-")[*Diagnostics*], uncover("3-")[revisit the model or the computation],
+  uncover("4-")[*Posterior predictive*], uncover("4-")[reassess how the model represents the data],
+)
+
+#speaker-note[
+  - A failed check is useful information, not a reason to hide the check.
+  - Prior predictive failures send us back to assumptions and sometimes to our
+    understanding of the measurement process.
+  - Diagnostic failures may be computational, but often reveal difficult model
+    geometry.
+  - Posterior predictive failures are model criticism: identify the mismatch
+    that matters scientifically before expanding the model.
+]
 
 = Working through the workflow: golf putting
 
