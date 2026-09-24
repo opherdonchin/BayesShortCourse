@@ -2,6 +2,7 @@
 #import "diagrams/bioassay_model.typ": bioassay-model-graph
 #import "diagrams/bayesian_workflow.typ": workflow-diagram
 #import "diagrams/golf_geometry.typ": golf-geometry
+#import "diagrams/golf_angle_distance.typ": golf-angle-distance
 
 #show: short-course-theme
 
@@ -687,24 +688,96 @@ with pm.Model() as model:
   is scientifically useful: it tells us exactly what the next model must add.
 ]
 
-== A new physical model
+== A putt must have the right direction _and_ the right distance
 
-// This time we should show Figure 25.6 and the equations on pages 392 and 393.
+#grid(
+  columns: (1fr, 1.12fr),
+  column-gutter: 1.0em,
+  align: horizon,
+  [
+    #golf-angle-distance
+    #align(center, text(size: 11pt, fill: gray)[
+      Redrawn from Gelman et al., _Bayesian Workflow_, Fig. 25.6
+    ])
+  ],
+  [
+    #set text(size: 14pt)
+    *Direction*
+    $ p_"angle"(x) = 2 Phi((arcsin((R-r)/x)) / sigma_"angle") - 1 $
 
-== The aiming + distance model
+    #uncover("2-")[
+      *Distance*
+      $ u = (x+1)(1+epsilon), quad epsilon tilde "Normal"(0, sigma_"distance") $
+      $ p_"distance"(x) = Phi(2 / ((x+1)sigma_"distance")) - Phi(-1 / ((x+1)sigma_"distance")) $
+    ]
 
-// The fit in 03_angle_and_distance with the text "An aiming and distance model improves fit and interpretability" "Still consistent fit problems at middle distances"
+    #uncover("3-")[
+      #block(
+        width: 100%,
+        inset: 0.55em,
+        radius: 5pt,
+        fill: rgb("#eb811b").lighten(88%),
+        stroke: 1pt + rgb("#eb811b"),
+        align(center, $p(x) = p_"angle"(x) p_"distance"(x)$),
+      )
+    ]
+  ],
+)
+
+#speaker-note[
+  The angle-only model explains one failure mode. Broadie's expansion adds a
+  second: the putt must reach the cup but not roll too far past it. The golfer
+  aims one foot beyond the cup, while viable potential distance lies between
+  the cup and three feet beyond it. Assuming independent angular and distance
+  error lets us multiply the two probabilities. This adds one interpretable
+  scale parameter rather than an arbitrary curve adjustment.
+]
+
+== The expanded model appears to improve fit and interpretability
+
+#grid(
+  columns: (1.48fr, 0.82fr),
+  column-gutter: 1.0em,
+  align: horizon,
+  image("figures/03_angle_and_distance_posterior-fit.svg", width: 100%),
+  [
+    #text(size: 14pt)[
+      An aiming and distance model improves fit and interpretability.
+
+      #v(0.7em)
+      *Still:* consistent fit problems remain at middle distances.
+    ]
+
+    #v(0.9em)
+    #block(
+      inset: 0.55em,
+      radius: 5pt,
+      fill: rgb("#4f7d8a").lighten(91%),
+      stroke: 1pt + rgb("#4f7d8a"),
+      text(size: 12pt)[A plausible curve is not yet a trustworthy posterior.],
+    )
+  ],
+)
+
+#speaker-note[
+  At first glance, adding distance control improves the long-range behavior and
+  gives both parameters a physical interpretation. The shaded middle range
+  still shows systematic mismatch. More importantly, this curve represents a
+  high-density fitted mode, not a reliable posterior summary. Before we
+  interpret either parameter, the sampling diagnostics must agree.
+]
 
 == The aiming + distance model: have we sampled the posterior?
 
 #grid(
-  columns: (auto, 1fr),
+  columns: (1.45fr, 0.8fr),
   column-gutter: 1.2em,
   align: horizon,
   // Saved by section "## Fit and diagnose" of golf/03_angle_and_distance.ipynb.
-  image("figures/03_angle_and_distance_fit-and-diagnose.svg", height: 6.5cm),
+  image("figures/03_angle_and_distance_fit-and-diagnose.svg", width: 100%),
   // Values from the notebook's azs.summary of sigma_angle_deg and sigma_distance.
   [
+    #set text(size: 14pt)
     The chains disagree:
     - $hat(R) approx 2$
     - ESS $approx 5$ of 4,000 draws
@@ -725,38 +798,166 @@ with pm.Model() as model:
   the slide quotes only R-hat and ESS.
 ]
 
-== Continued improvements
+== Each failed check suggests the next model—not the final model
 
-// This is just a text slide with bullet points. Format to fit the presentation. I'm just putting the bullet points here. Do add uncovers appropriately
+#let revision-card(number, title, body, accent: rgb("#4f7d8a")) = block(
+  width: 100%,
+  height: 100%,
+  inset: 0.65em,
+  radius: 6pt,
+  fill: accent.lighten(91%),
+  stroke: 1pt + accent,
+  stack(
+    spacing: 0.35em,
+    text(size: 11pt, weight: "semibold", fill: accent)[STEP #number],
+    text(size: 15pt, weight: "semibold")[#title],
+    text(size: 12pt)[#body],
+  ),
+)
 
-- Model misfit results from very large distances in logit scale near the hole
-  - Replace the logstic model with a normal model
-  - Wrong but better
-- Try to return to logit model by adding a distance-dependent variance term
-  - Much worse fit
-  - Sometimes a 'truer' model is not better
-- Recover logit model by using proportional rather than additive noise
-  - Then use the new model to discover the true distance parameter
-- Iterative model building should be central to data analysis
-  - Develop intuition
-  - Develop critical approach
+#grid(
+  columns: (1fr, 1fr),
+  rows: (1fr, 1fr),
+  column-gutter: 0.65em,
+  row-gutter: 0.65em,
+  revision-card(
+    "1",
+    [Absorb local mismatch],
+    [Huge short-putt counts dominate on the logit scale. Replace the Binomial with a Normal discrepancy model: *wrong, but better.*],
+  ),
+  uncover("2-", revision-card(
+    "2",
+    [Try a “truer” correction],
+    [Add distance-dependent variance on the logit scale. The fit becomes *much worse*: realism alone does not guarantee usefulness.],
+    accent: rgb("#a35b32"),
+  )),
+  uncover("3-", revision-card(
+    "3",
+    [Change the discrepancy scale],
+    [Use proportional rather than additive noise. The mechanism becomes usable enough to learn the distance-tolerance parameter.],
+    accent: rgb("#687a3a"),
+  )),
+  uncover("4-", revision-card(
+    "4",
+    [Keep iterating critically],
+    [Model building develops intuition—and the habit of asking what each apparent improvement actually explains.],
+    accent: rgb("#eb811b"),
+  )),
+)
 
+#speaker-note[
+  Compress the rest of the notebook sequence into four decisions rather than a
+  parade of fitted curves. First, a Normal discrepancy absorbs systematic
+  mismatch even though it is not the literal count model. A more literal
+  distance-dependent logit discrepancy performs worse. Proportional noise then
+  restores a useful logit formulation and supports learning another physical
+  parameter. The lesson is not that the last model is true; it is that checks
+  guide purposeful revision and sharpen scientific judgment.
+]
 = Becoming independent Bayesian analysts
 
 == The sleep deprivation data
 
-// This slide should show the sleep deprivation data with the basic facts about the study and the provenance
+#grid(
+  columns: (1.55fr, 0.75fr),
+  column-gutter: 1.0em,
+  align: horizon,
+  image("figures/sleepstudy_data.svg", width: 100%),
+  [
+    #set text(size: 14pt)
+    *180 observations*
+    - 18 participants
+    - 10 daily averages each
+
+    *Most sleep-restricted group*
+    - 3 hours time in bed per night
+    - Days 0–1: adaptation and training
+    - Day 2: baseline
+    - Restriction begins after day 2
+
+    #v(0.5em)
+    The population trend is clear—yet participants differ in both baseline and change.
+  ],
+)
+
+#align(bottom + right, text(size: 11pt, fill: gray)[
+  Data: Belenky et al. (2003), distributed as `sleepstudy` in lme4
+])
+
+#speaker-note[
+  These are daily mean reaction times for the most sleep-restricted group in
+  Belenky and colleagues' study. The familiar shorthand “nine days of sleep
+  deprivation” hides an important detail: days zero and one were adaptation
+  and training, day two was baseline, and restriction began afterward. Each
+  line is one person. The shared upward movement motivates a population effect;
+  the different starting points and slopes motivate a multilevel model.
+]
 
 == What we will practice
 
-// A bullet point slide with the following points. Format to fit the presentation. Add uncovers appropriately
+#let practice-card(kicker, title, items) = block(
+  width: 100%,
+  height: 5.7cm,
+  inset: 0.75em,
+  radius: 6pt,
+  fill: rgb("#4f7d8a").lighten(92%),
+  stroke: 1pt + rgb("#4f7d8a"),
+  [
+    #text(size: 11pt, weight: "semibold", fill: rgb("#eb811b"))[#kicker]
+    #v(0.25em)
+    #text(size: 17pt, weight: "semibold")[#title]
+    #v(0.4em)
+    #set text(size: 12pt)
+    #items
+  ],
+)
 
-- Choosing priors
-  - Using common sense
-  - Using prior predictive checks
-  - Practical issues
-- Building hierarchical models 
-  - Separating uncertainty about individuals from uncertainty about the population
-  - Understanding how hierarchical models share information across individual fits
-  - Choosing priors for population- and individual-level parameters
-- Using AI to support Bayesian data analysis
+#grid(
+  columns: (1fr, 1fr, 1fr),
+  column-gutter: 0.65em,
+  align: top,
+  practice-card(
+    [01],
+    [Choose priors],
+    [- Use common sense
+     - Check prior predictions
+     - Handle practical constraints],
+  ),
+  uncover("2-", practice-card(
+    [02],
+    [Build hierarchical models],
+    [- Separate individual and population uncertainty
+     - See how partial pooling shares information
+     - Choose priors at both levels],
+  )),
+  uncover("3-", practice-card(
+    [03],
+    [Use AI as a collaborator],
+    [- Make assumptions explicit
+     - Check generated code and results
+     - Keep scientific judgment in the loop],
+  )),
+)
+
+#uncover("4-")[
+  #v(0.45em)
+  #align(center, block(
+    width: 72%,
+    inset: (x: 1.0em, y: 0.55em),
+    radius: 6pt,
+    fill: rgb("#eb811b").lighten(88%),
+    stroke: 1pt + rgb("#eb811b"),
+    align(center, text(size: 14pt, weight: "semibold")[
+      The goal is independence: formulate, fit, check, revise, and explain.
+    ]),
+  ))
+]
+
+#speaker-note[
+  This is the handoff from demonstration to active work. Learners will make
+  prior choices in meaningful units and inspect their implications; construct
+  a hierarchical model that distinguishes people from the population; and use
+  AI to accelerate routine work without outsourcing model criticism. The end
+  product is not merely code that runs, but a defensible workflow they can
+  explain.
+]
