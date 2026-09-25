@@ -35,7 +35,7 @@ The expected reaction time is a derived quantity whose formula depends on the li
 
 ## Modeling notes
 
-The book's varying-intercept/varying-slope models use an LKJ prior for correlations among group-specific coefficients (notebooks 5, 7–12 here). We use independent, non-centered hierarchical priors for participant intercepts and slopes instead — a deliberate simplification for a short course, not a software limitation — so these notebooks reproduce the varying-intercept/varying-slope structure but not the intercept–slope correlation parameter.
+The book's varying-intercept/varying-slope models use an LKJ prior for correlations among group-specific coefficients (notebooks 5, 7–12 here). We use independent hierarchical priors for participant intercepts and slopes instead — a deliberate simplification for a short course, not a software limitation — so these notebooks reproduce the varying-intercept/varying-slope structure but not the intercept–slope correlation parameter. Centered or non-centered parameterizations are chosen according to the notebook's teaching purpose and verified with sampling diagnostics rather than imposed as a course-wide rule.
 
 `pm.ExGaussian(mu, sigma, nu)` matches the book's parameterization directly. Its expected response is `mu + nu`.
 
