@@ -71,9 +71,7 @@ Independently re-verified with a standalone structural script (49 cells in both 
 0 mismatches beyond the expected: cell 0's Colab badge URL, and the 12
 `solution`-tagged cells replaced with bare `# answer here` / `- answer here`
 placeholders in the self-work file). The self-work notebook itself is unexecuted (no
-stray outputs or execution counts) — correct, since it cannot be run as-is (`pm.Flat`
-cannot be prior-predictive-sampled, and 2.1-2.3 ask students to predict what fitting
-will do before running it).
+stray outputs or execution counts), as for every self-work notebook (playbook §2).
 
 ## Conclusion
 
