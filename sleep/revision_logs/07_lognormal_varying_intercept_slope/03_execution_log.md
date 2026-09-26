@@ -91,3 +91,16 @@ Fixed the `mu_b1`/"3–5%" rounding mismatch and the two panels-look-alike cells
 Verified the `sd_sd_b1` deviation with real execution (not simulation) before accepting
 it, and independently confirmed the 6.1 methodological claim. Proceeding to fresh-eyes
 review (Step 3b).
+
+## Correction (after fresh-eyes review, `04_review.md` finding 1)
+
+The line above attributing "2 of 18 panels... the expected occasional late-week spike
+from a large sampled slope difference" to a single cause was wrong, and the same error
+was written into the notebook's own 2.5/2.6 answers. The review traced each spike
+individually: participant 333's panel spikes late in the week from a large sampled
+`sd_b1`/`b1` draw (as described), but participant 335's panel spikes **at day 0**,
+which cannot be a slope effect (`b1 × 0 = 0`) — it is a single extreme residual draw
+from the far tail of `sd_y`. 2.6's claim that panels are "independent draws" was also
+wrong (they share the same top-level hyperparameters within a draw — exchangeable, not
+independent). Notebook text (cells 32, 34) fixed accordingly; see `04_review.md` for
+the full derivation.

@@ -253,3 +253,51 @@ See `03_execution_log.md` for the full reasoning and the before/after images. Al
 fixed a rounding mismatch the implementer had flagged as a risk (`mu_b1`'s HDI rounds
 to 0.02-0.05, not 0.03-0.05) and adjusted the "why do panels look alike" Q&A (2.6) to
 match the real plot, which shows 2 of 18 panels with a visible spike rather than none.
+
+## Correction (after fresh-eyes review, `04_review.md` finding 1)
+
+The "2.6 why all panels look alike (exchangeability)" line above, and the deviation
+note about adjusting 2.6 for "2 of 18 panels with a visible spike", both stated or
+implied a single cause (large slope draws) for both prior-predictive spikes. The
+fresh-eyes review found this wrong: the two spikes have different causes (one slope,
+one residual — see `04_review.md` finding 1 and the correction in `03_execution_log.md`).
+The notebook's own text was corrected; this note is left as a record of how the error
+entered (a post-execution edit made without separately checking each spike's cause).
+
+## Fix loop (Step 4, applied by orchestrator after fresh-eyes review)
+
+Applied from `04_review.md`:
+- **Finding 1 (major):** rewrote 2.5 (cell 32) and 2.6 (cell 34) to correctly attribute
+  each prior-predictive spike to its actual cause (slope vs. residual), drop the
+  "independent" mischaracterization, and correct the "narrow through midweek" claim.
+  Corrected the same error in this file and `03_execution_log.md` (see their own
+  correction sections) rather than silently rewriting the original entries.
+- **Finding 2 (moderate):** fixed the `mu_b1`/`sd_b1` HDI ranges in 4.2, 4.4, and 7.1
+  to the actual unrounded values (0.025-0.045 and 0.015-0.03) rather than the
+  `round_to=2` table's coarser 0.02-0.05/0.01-0.03, and pointed both questions (cells
+  51, 55) at the plot the student just drew rather than only the rounded summary table.
+- **Finding 4 (minor):** reworded 5.5 (cell 73) and 7.1's "Predictive checks" bullet to
+  state the residual-scale mismatch as a mild systematic pattern (steady participants'
+  bands too wide, variable participants' too narrow), not just "isolated observations".
+- **Finding 5 (optional):** added a one-sentence comparison to Notebook 5's fitted
+  slope (in ms/day) to cell 52.
+- **Finding 6 (trivial):** fixed `sd_b1`'s "about 0.11" to "about 0.12" (cell 28,
+  matching the plotted 90% HDI), and reworded the section 6 heading (cell 79) from
+  "Sensitivity of the hierarchical scales" to "Prior sensitivity" since it power-scales
+  all five top-level priors, not only the scale parameters.
+
+Deferred (per the review's own "Considered, not recommended for this pass", plus
+finding 3's option (b)):
+- **Finding 3, option (a) applied, option (b) deferred.** Applied the prose-only fix
+  (identify panels by position: "308 (first panel)", "332 (sixth)", etc., in cells 32,
+  73). The review's option (b) — adding per-panel participant-ID titles to the shared
+  `plot_participants` helper — is a better long-term fix but changes infrastructure
+  shared with NB01-06 and would need re-execution/propagation there too (playbook
+  §1.3's shared-infrastructure rule); left as a course-wide follow-up, not decided
+  silently here.
+- ECDF plot axis/title labels, and the subset trace plot's missing legend: both
+  inherited from NB01-06 unchanged; course-wide, not NB07-specific (matches NB06
+  review's own deferrals).
+
+Re-verified structural consistency (self-work vs. solved) after all fixes: 0
+mismatches.
