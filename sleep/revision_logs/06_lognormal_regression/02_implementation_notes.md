@@ -146,3 +146,46 @@ reaction times, not implausible ones"). If the reviewer or instructor would rath
 - `sleep/solved/README.md` was not touched. Its "Plotting grammar" and "expected reaction
   time" lines already match this notebook (`plot_population` defined because it is used;
   `mean_rt = exp(mu_y + sd_y**2 / 2)`).
+
+## Fix loop (Step 4, applied by orchestrator after fresh-eyes review)
+
+Applied all 6 findings from `04_review.md` directly (all were markdown-text-only, no
+model/code change, so no re-execution was needed — verified no edited cell was a code
+cell with existing outputs). Independently re-simulated the corrected model's prior
+predictive before applying finding 1's fix, to confirm the reviewer's claim (day-0
+27% / day-7 40% of draws below 100ms; day-7 24% below 50ms — matched the review's
+numbers) rather than taking it on trust.
+
+- **Finding 1 (major):** rewrote 2.8 (cell 36) and the 7.1 Priors bullet (cell 79) to
+  honestly state that the 50% HDI band sits below every observed value at baseline and
+  below ~150ms throughout, rather than calling the prior "broadly plausible". Applied
+  Fix A (prose-only, keeps the existing prior values) rather than Option B (tightening
+  `sd_b1`/re-centering `b0`, which would need re-execution and is framed as an
+  instructor decision) — consistent with keeping this pass's changes minimal and
+  reversible. Also added a sentence to 2.9's answer (cell 38) linking the low band
+  position to 2.8's finding.
+- **Finding 2 (moderate):** added a sentence to 2.2's answer (cell 24) contrasting the
+  slope prior's breadth with Notebook 1's ±40ms/day (~±16%), and changed 7.1's
+  "expressing similar beliefs" to "re-eliciting the priors" (cell 79).
+- **Finding 3 (minor):** dropped the "orange" color claim from the 2.9 question (cell
+  37, mirrored in both notebooks since it's an `exercise-question` cell) since this
+  notebook's `arviz-variat` style renders the mean line pink, and corrected the mean
+  line description in 2.9's answer (cell 38) — the spike is at day 3 in one panel, not
+  a general "later days" pattern, and it's simulation noise since this model has no
+  participant structure.
+- **Finding 4 (minor):** reworded the NB5 comparison in 5.6 (cell 67) and the 7.1
+  Predictive checks bullet (cell 79) so "also" cannot be misread as implying this
+  notebook's model is hierarchical too.
+- **Finding 5 (minor):** added a sentence to 1.6 (cell 19) grounding the slope-prior
+  criterion-3 failure in a concrete number, not just criteria 1-2.
+- **Finding 6 (minor):** added a clause to 1.5 (cell 16, a `given` cell, so mirrored in
+  both notebooks) explaining why the summary reports a median instead of a mean
+  (draws overflow to infinity).
+
+Not applied (per reviewer's own "Considered, not recommended for this pass" section,
+correctly deferred as repository-wide or playbook-level, not NB06-specific): ECDF plot
+axis labels (matches NB5, would need a course-wide pass), `round_to=2` precision for
+log-scale parameters (playbook §3.7 default, a playbook-level question if changed).
+
+Re-verified structural consistency (self-work vs. solved) after applying fixes: 0
+mismatches.
