@@ -365,3 +365,53 @@ What this establishes:
 - **Mechanism:** `probe10.py`, `probe_grid.npy`, `render10.py`, `r_*.png`.
 - **Executed copies:** `exec_copy*.ipynb`, `exec_final.ipynb`, `exec_cell*.png`,
   `nbconvert*.log`.
+
+## Fix loop (Step 4, applied by orchestrator after fresh-eyes review)
+
+Review verdict: ready to commit after markdown fixes, nothing blocking. Applied
+findings 1-7 from `04_review.md`:
+
+- **Finding 1 (moderate):** the notebook told students a failed fit's quantities
+  "cannot be reported" (4.2/5.1), then interpreted `log_nu`'s HDI two cells later
+  without acknowledging the tension. Added a framing sentence to 4.3 explaining that
+  the failed fit's draws can still show *where* the prior vs. the data shaped the
+  posterior (which is legitimate) and that this is also why there's no posterior
+  predictive check; reworded 4.4 and 5.1 to attribute the "~10ms bound" claim to
+  agreement with notebook 9's converged fit, not to trusting this fit's own numbers.
+- **Finding 2:** the printed sampler warning says "increase target_accept" while 3.1
+  says that makes things worse, with nothing reconciling the two. Appended one
+  sentence to 3.3 explaining why (smaller steps under a fixed tree-depth cap move even
+  less).
+- **Finding 3:** 4.5's mechanism explanation used "gradient" and "log density" without
+  ever saying what steers the sampler's path or why a density jump defeats it (the
+  same "undefined term" class notebook 9's review caught). Added one clause to 3.3
+  (path "steered by the slope (the gradient) of the log posterior density") and
+  extended 4.5 to say the jumps are too small to register as divergences but still
+  defeat a gradient-steered path, plus a concrete closing sentence contrasting with
+  notebook 9 (same likelihood, sampled in half a minute, because its tail prior kept ν
+  above the switch point).
+- **Finding 4:** 4.4 called `exp(mean of log_nu)` ≈ 0.15ms "the tail: effectively no
+  tail at all" — neither the posterior mean (1.6ms) nor median (0.26ms) by the
+  notebook's own point-estimate convention, and phrased as a finding about reaction
+  times rather than about where the prior pulled the estimate. Replaced with a
+  sentence correctly framing it as the prior's pull.
+- **Finding 5:** 4.2's "looks fine but can't be trusted" argument was abstract; made it
+  concrete by naming `b1[332]` (the screen's worst-mixing parameter) as the actual
+  channel through which `mu_b1`'s apparent health is not independent of the failure.
+- **Finding 6:** added one sentence to 3.1 warning that exact diagnostic values (and
+  even which participant is worst) can differ on another machine when a sampler fails
+  this badly, though the qualitative pattern won't.
+- **Finding 7:** the intro said notebook 9 chose "those priors" (plural, meaning all
+  three changed here) in milliseconds, but one of the three (`sd_log_sd_y`) was
+  actually a unit-free ratio carried over from notebook 8, not elicited in ms. Fixed
+  the intro's first two paragraphs to state this accurately.
+- **Trivial:** added `sd_log_sd_y`'s low bulk ESS (~170) to 3.4's diagnostic verdict,
+  alongside `log_nu`'s, since it also falls short of Notebook 1's "comfortably in the
+  hundreds" criterion.
+
+Not applied (review's own "optional"/"not needed" trivial items): the 2.6 criterion
+cross-reference rewording and the 4.3 figure's KDE-edge clarification — both marked
+by the reviewer as not needed.
+
+Re-verified structural consistency (self-work vs. solved) after all fixes: 0
+mismatches.
