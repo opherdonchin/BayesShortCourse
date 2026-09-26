@@ -103,10 +103,22 @@ style. These are now decided, for consistency across NB06–12:
 | `participant_intercept_z`, `participant_intercept`, `participant_intercept_sd` | removed — see §3.4 (centered parameterization) |
 | `population_mu` | removed — see §3.6 |
 
-For notebooks 8–11 (distributional models with a residual-scale hierarchy) there is no
-established precedent name yet; follow the `mu_<x>`/`sd_<x>` pattern used for the mean
-structure (e.g. `mu_log_sd_y`/`sd_log_sd_y`, or whatever the actual parameterization
-needs) and record the choice in that notebook's plan.
+**Distributional (residual-scale hierarchy) naming — set by NB08, apply to NB09–11
+where the same construct recurs:**
+- `mu_log_sd_y`/`sd_log_sd_y`: the hyperparameters (population center and
+  between-participant SD of the log residual scale).
+- `log_sd_y`: the **centered** participant-level parameter, `dims="participant"` —
+  mirrors `b0`/`b1`'s own form directly (a value, not a deviation-from-population
+  term), not a `_z`-style non-centered deviation.
+- `sd_y = pm.Deterministic("sd_y", pm.math.exp(log_sd_y), dims="participant")`: the
+  scientifically meaningful, participant-level quantity — this is what gets
+  forest-plotted, and `sd_y[pidx]` is used directly in the likelihood and in
+  `mean_rt`. No separate observation-level `sd_y` Deterministic (it would just repeat
+  each participant's value across their observations, which AGENTS.md's "every
+  Deterministic must be used" argues against).
+- No `residual_scale`/`population_residual_scale` pair — matches §3.6's removal of
+  `population_mu`: a "typical participant" residual-scale twin only if a specific
+  question needs one, not by default.
 
 **Expected-value naming for a non-identity link (NB06–08 lognormal, NB09–11
 ex-Gaussian):** `mu_y` is always the *location/linear-predictor* parameter (matching
