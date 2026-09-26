@@ -108,8 +108,11 @@ non-identity link).
 ### 6.3 Compute and interpret psense_summary.                      [exercise-question/solution]
 ### 6.4 Are the conclusions sensitive to the log-scale prior choices? [exercise-question]
 
-(closing) — forward pointer to Notebook 7 (hierarchical lognormal), as a Q&A per
-playbook §3 "criteria first" pattern, not closing prose.
+(closing) — **[REVISED per instructor correction, see playbook §3.10]** summarize what
+this notebook itself found: a short retrospective Q&A on what the corrected lognormal
+model showed (positive support respected, predictive adequacy, what prior sensitivity
+revealed). Do NOT preview or point forward to Notebook 7 — end on this notebook's own
+results, not a lead-in to the next one.
 ```
 
 ## Model/code content

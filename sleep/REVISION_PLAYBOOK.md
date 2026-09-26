@@ -233,6 +233,30 @@ scatter and HDI-width comparison, NB3's Normal-vs-Student-t density plot, NB5's
 `change_7`. Treat these as *examples of the kind of device available* (a supplied
 comparison plot, a notebook-appropriate derived quantity), not as content to copy.
 
+### 3.10 Closing section — summarize, don't preview (instructor correction)
+
+NB1, NB4, and NB5 all end with a forward-looking Q&A that motivates the *next*
+notebook (per the shared report §1.3/§7 item 34). **The instructor has explicitly said
+this is not the wanted convention**: a notebook should end by summarizing what it
+itself accomplished or found — its own results — not by previewing what comes next.
+Apply this to NB06–12: close each notebook with a short retrospective Q&A or brief
+summary of that notebook's own findings (e.g. what the fitted model showed about the
+scientific question, what the predictive checks confirmed or complicated). Do not
+title or frame the closing content as a lead-in to the next notebook, and do not use
+phrasing like "the next notebook will…".
+
+### 3.11 Calibration: NB4 and especially NB5 are less polished than NB1–03
+
+Direct instructor feedback: NB4 and NB5 "reflect my general intention but are not well
+proofread" — consistent with the shared report's independent findings of stale numbers
+and hedged answers concentrated in NB4/05 (§8 of the shared report). Their
+**structural/substantive conventions still stand** (naming in §3.1, centered
+parameterization in §3.4, the tag scheme in §2, `ci_kind="hdi"` in §3.7, etc. — these
+are deliberate, confirmed decisions). But where NB4/05 and NB1–03 differ only in prose
+polish, phrasing confidence, or answer style (hedged vs. declarative, wording quality),
+treat NB1–03 as the more reliable style model and NB4/05 as rougher drafts of the same
+intention, not as equally authoritative examples to copy verbatim.
+
 ## 4. Known defects in NB4/NB05 — fixed, not your responsibility to redo
 
 As part of preparing this playbook, two mechanical, unambiguous bugs found by the
