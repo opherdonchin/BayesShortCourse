@@ -120,13 +120,30 @@ where the same construct recurs:**
   `population_mu`: a "typical participant" residual-scale twin only if a specific
   question needs one, not by default.
 
-**Expected-value naming for a non-identity link (NB06–08 lognormal, NB09–11
-ex-Gaussian):** `mu_y` is always the *location/linear-predictor* parameter (matching
-NB4–05). Where the expected observable differs from `mu_y` (i.e. wherever the link is
-not the identity), expose it as an explicit, separately named `pm.Deterministic`, e.g.
-`mean_rt`, per the existing README formulas:
+**Expected-value naming, and a correction about which notebooks have a non-identity
+mean link:** `mu_y` is always the *location/linear-predictor* parameter, matching
+NB4–05's `mu`. For NB06–08 (lognormal), the mean **structure itself** needs a log link
+(`b0`/`b1`/`mu_y` are on the log-RT scale), because `pm.LogNormal`'s `mu` is a log-scale
+location. **For NB09–11 (ex-Gaussian), this is not the case**: `pm.ExGaussian`'s `mu` has
+full support on the real line and is already on the millisecond scale, so the mean
+structure reverts to NB4–05's ms-scale naming and values (verified directly against
+NB05 for NB09 — see its `02_implementation_notes.md`). Only the *scale* (`sigma`) and
+*tail* (`nu`) parameters need a log link there, via the distributional-hierarchy
+pattern above. Wherever the expected observable differs from `mu_y` (i.e. wherever
+*some* part of the likelihood is non-identity), expose it as an explicit, separately
+named `pm.Deterministic`, `mean_rt`, per the existing README formulas:
 - lognormal: `mean_rt = pm.math.exp(mu_y + sd_y**2 / 2)`
 - ex-Gaussian: `mean_rt = mu_y + nu`
+
+**Population-only log-linear parameters (no participant hierarchy) — set by NB09:**
+when a parameter needs a log link but has no participant-level dimension (e.g. the
+ex-Gaussian tail `nu`, population-only per notebook 9's plan/decision — see its
+`02_implementation_notes.md` decision 2 for the empirical justification), name it
+`log_<param>` (not `mu_log_<param>`) with plain numeric prior constants `mu_log_<param>`/
+`sd_log_<param>`, and expose `<param> = pm.Deterministic("<param>", pm.math.exp(log_<param>))`.
+The `mu_` prefix is reserved for the population *center* of a participant-level
+distribution (`mu_b0`, `mu_log_sd_y`); a population-only parameter is not that, and
+naming it `mu_log_nu` would misleadingly imply a hierarchy that doesn't exist.
 For a Gaussian/Student-t notebook (NB12), `mu_y` already *is* the expected value, so no
 separate `mean_rt` is needed there — matches NB4–05.
 
