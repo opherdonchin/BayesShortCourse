@@ -192,8 +192,16 @@ probably because of a cold compile cache on the first run.
 
 **Diagnosis** (`divloc.py`, `divdiag.py`). The divergences are not in the neck of an
 `sd_log_sd_y` funnel: at the divergent draws, `sd_log_sd_y` is at the 31st and 58th
-percentiles of its posterior. They occur where some participant's `log_sd_y` is in its
-lower tail, for example 371 at its 4th percentile.
+percentiles of its posterior.
+
+**Correction (after fresh-eyes review, `04_review.md` finding 6):** the original text
+here also claimed the divergence located to a participant's `log_sd_y` lower tail
+("371 at its 4th percentile"), as if that pinpointed a cause. The review checked this
+and found it carries no evidential weight: at a random posterior draw, some
+participant's `log_sd_y` is typically already below its 4th percentile (52% of random
+draws have one), so this observation doesn't distinguish the divergent draw from an
+ordinary one. The diagnosis still stands on the notebook's own quintile-based evidence
+below, which the review independently reproduced.
 
 This is a **within-participant funnel**. For participants 309 and 352, the posterior SD
 of `b0` and `b1` grows about 2.6× from the lowest to the highest quintile of that
@@ -298,3 +306,42 @@ not match bit-for-bit (decision 5), so read the posterior items as ± their last
   `derive_and_verify_nb08.py`, `check_nb08.py`, `model08.py`, `fit08.py`, `lit08.py`,
   `prior_spikes.py`, `cover08.py`, `ecdf08.py`, `psense08.py`, `seeds08.py`, `divloc.py`,
   `divdiag.py` and `*.png`.
+
+## Fix loop (Step 4, applied by orchestrator after fresh-eyes review)
+
+Review verdict: ready to commit, 5 minor fixes recommended (all applied), 1 log-only
+correction (applied above), 2 optional/trivial items considered.
+
+Applied from `04_review.md`:
+- **Finding 1:** added one sentence to 3.2's question (cell 61, mirrored to self-work)
+  explaining that tuning picks a single step size for the whole posterior, so the
+  question's "why could that make a single step size hard to choose?" has a stated
+  premise rather than requiring students to infer sampler mechanics the course never
+  taught.
+- **Finding 2:** fixed 6.1's "Priors" bullet (cell 104) to state that NB07 also had a
+  single-day prior-predictive spike (from its shared `sd_y`'s tail), not that NB08's
+  spikes are new. Also added the optional NB07 cross-reference to 2.7 (cell 55).
+- **Finding 3:** clarified 2.4 (cell 49) that a residual scale near 1 is excluded only
+  for the *typical* participant, not routinely for individuals (2.7 shows individual
+  scales up to ~5-6).
+- **Finding 4:** fixed 4.4's overstatement (cell 81) — values below 0.4 lie outside the
+  90% HDI (true), not "ruled out" (P ≈ 4%, not ~0); values below 0.3 are the ones
+  actually ruled out.
+- **Finding 5:** closed the loop 2.6 (cell 53) left when the sensitivity section was
+  dropped — added that NB07's power-scaling check (not just its acceptance) showed the
+  mean-structure priors don't drive the posterior, which is why it's fine to proceed
+  here without repeating that check.
+- **Finding 6 (log-only):** corrected the divergence-location claim in these notes
+  (see above) — it had no evidential weight; the diagnosis stands on the quintile
+  evidence alone.
+- **Trivial (finding 8):** fixed three small numeric/wording slips: cell 23's "25%"
+  range endpoint (should be 22%, matching $e^{-1.5}$), cell 49's "$e^{-1.7}\approx0.19$"
+  (should be 0.18), cell 55's "1.5-2.5 s" (should be 1.5-2.7 s to cover 351's actual
+  panel-mean rise), cell 85's "about 0.03" for 309/352 (should be "about 0.027").
+
+Not applied (per the review's own recommendation): finding 7 (optional scaffolding
+merge of 1.11/1.12 — the review itself calls this optional and low-value, and
+renumbering carries its own risk for no real gain).
+
+Re-verified structural consistency (self-work vs. solved) after all fixes: 0
+mismatches.
