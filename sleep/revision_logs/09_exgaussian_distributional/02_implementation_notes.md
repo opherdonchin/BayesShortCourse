@@ -166,7 +166,10 @@ participant's `sd_y` (309, 349, 352) is in its lowest 0–3%, well below 1 ms, s
 - Evidence: in the lowest 3% of `sd_y[309]` draws, 309's smallest residual `y − mu_y` is
   squeezed to [−0.05, 2.0] ms (10th–90th percentile), against [−3.5, 3.8] ms in typical
   draws.
-- 22 of the 38 default-setting divergences fall in that 3% of draws.
+- 22 of the 38 default-setting divergences fall in that 3% of draws (against about 3%
+  of all draws — the fresh-eyes review's own localization check, `04_review.md`, found
+  26/38 with a slightly different threshold and confirmed the enrichment is real, not
+  an artifact of an uninformative baseline).
 - This happens because the shared ~7 ms tail can explain much of a steady participant's
   scatter, so the likelihood for their `log_sd_y` is flat toward zero and the posterior
   reaches the hard-edge region.
