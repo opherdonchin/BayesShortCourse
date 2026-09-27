@@ -4,7 +4,7 @@
 
 - IDs match `2_review_consolidated.md` (full context) and, through it, `1_review_by_notebook.md` (per-notebook detail).
 - ⚠ **re-run** = the change touches code, so the notebook must be re-executed and every quoted number re-checked.
-- "Book" = Chapter 17 of `Bayesian-Workflow.pdf`, plus the online case-study code for NB8–11 (not in the printed chapter).
+- "Book" = Chapter 17 of `Bayesian-Workflow.pdf`, plus the online case-study code for NB8–11 (not in the printed chapter). "Port" = the Python case study you supplied; it stops at the varying-intercept model, so it informs NB1–NB4 only (see the addendum in `1_review_by_notebook.md`).
 
 Already done on this branch (commit `3a48fa8`): 14 mechanical fixes, listed in the appendix with a keep/revert line each.
 
@@ -76,7 +76,7 @@ Already done on this branch (commit `3a48fa8`): 14 mechanical fixes, listed in t
 ## Tier 2 — Content within notebooks
 
 ### P7 · NB3's headline vs its own numbers · NB3
-**Issue.** The Student-t prior moves `b1` to 8.16 (NB2: 2.29; NB1: 11.33), yet prior sensitivity *rises* (b1 0.393 vs 0.367). Text: conflict remains, prior is "less brittle". Book, same prior: "similar to what we had originally obtained" — tails let the data win. The density plot (x from −6 to 6) hides the tails where the difference lies.
+**Issue.** The Student-t prior moves `b1` to 8.16 (NB2: 2.29; NB1: 11.33), yet prior sensitivity *rises* (b1 0.393 vs 0.367). Text: conflict remains, prior is "less brittle". Book, same prior: posterior mean 9.2, "similar to what we had originally obtained" — tails let the data win. The port gets 8.08, matching NB3, so NB3's cautious reading is defensible; the question is only which message you want. The density plot (x from −6 to 6) hides the tails where the difference lies.
 **Options** (combinable).
 - A. Reframe the headline around robustness (as the book does), keeping the psense result.
 - B. Add one sentence on why power-scaling stays high when the posterior sits in the prior's tail.
@@ -87,7 +87,7 @@ Already done on this branch (commit `3a48fa8`): 14 mechanical fixes, listed in t
 **Decision:** _
 
 ### P8 · NB2 never shows what the conflict does to the estimates · NB2
-**Issue.** Under the tight prior, `b1` = 2.29 (NB1 11.33), and `b0` (268 → 300 ms) and `sd_y` (51 → 55 ms) shift to compensate — the mechanism behind the failed PPC and why unchanged priors get flagged. Not discussed.
+**Issue.** Under the tight prior, `b1` = 2.29 (NB1 11.33; the port gets the same 2.3), and `b0` (268 → 300 ms) and `sd_y` (51 → 55 ms) shift to compensate — the mechanism behind the failed PPC and why unchanged priors get flagged. Not discussed.
 **Options.** A. Add one question comparing the summary with NB1's. B. Leave.
 **Recommend.** A.
 **Decision:** _
@@ -120,7 +120,7 @@ Already done on this branch (commit `3a48fa8`): 14 mechanical fixes, listed in t
 **Decision:** _
 
 ### P10 · Residual-scale prior when a level is added · NB4, NB5, NB7, NB12
-**Issue.** NB4 keeps `sd_y ~ Exponential(scale=50)` and adds `sd_b0 ~ Exponential(scale=25)` with no rationale. The book splits 50 into 25 + 25 and flags "should the prior on sigma change?" as a discussion point. NB5/NB7/NB12 follow NB4.
+**Issue.** NB4 keeps `sd_y ~ Exponential(scale=50)` and adds `sd_b0 ~ Exponential(scale=25)` with no rationale. The book splits 50 into 25 + 25 and flags "should the prior on sigma change?" as a discussion point; the port uses 50 for both. NB4's 50 + 25 matches neither. NB5/NB7/NB12 follow NB4.
 **Options.**
 - A. Adopt the split, with one question on why; propagate. ⚠ re-run NB4, 5, 7, 12
 - B. Keep; add one sentence of rationale for 25.
@@ -171,7 +171,7 @@ Already done on this branch (commit `3a48fa8`): 14 mechanical fixes, listed in t
 **Decision:** _
 
 ### S5 · Unlabeled participant panels and trace colours · NB1–NB11
-**Issue.** 18 untitled panels; from NB7 on, answers locate participants as "middle row, first". Three-participant trace plots use three unlabeled colours. NB12's helper already titles panels.
+**Issue.** 18 untitled panels; from NB7 on, answers locate participants as "middle row, first". Three-participant trace plots use three unlabeled colours. NB12's helper and the port's per-subject plot already title panels.
 **Options.** A. Add titles to `plot_participants`; label trace colours. ⚠ re-run NB1–11 (NB1's slide figure unaffected — it doesn't use the helper). B. Leave.
 **Recommend.** A (can go with S2's re-run).
 **Decision:** _

@@ -4,7 +4,7 @@ This version merges the notebook-by-notebook findings of `1_review_by_notebook.m
 
 Issue IDs defined here (P = pedagogy/content, S = style/presentation, I = infrastructure, F = fix already made) are reused unchanged in pass 3.
 
-Sources used for "the book": Chapter 17 of `Bayesian-Workflow.pdf` (pp. 275–292) for NB1–7 and NB12; the online case-study code (`avehtari/Bayesian-Workflow/sleep_study/sleep_study.R`) for the distributional, ex-Gaussian, default-prior, and flat-prior models (NB8–11), which are not in the printed chapter. The ArviZ Python port was not consulted (its host was not reachable from this environment).
+Sources used for "the book": Chapter 17 of `Bayesian-Workflow.pdf` (pp. 275–292) for NB1–7 and NB12; the online case-study code (`avehtari/Bayesian-Workflow/sleep_study/sleep_study.R`) for the distributional, ex-Gaussian, default-prior, and flat-prior models (NB8–11), which are not in the printed chapter. The Python port (*Bayesian Workflow case studies in Python*, sleep study; PDF supplied after pass 1) covers only book sections 1–7, i.e. NB1–NB4; its bearing is summarized in the addendum to pass 1 and folded into P7, P8, P10, and S5 below.
 
 ---
 
@@ -87,7 +87,7 @@ All on branch `claude/sleep-notebooks-review-m0u2y9`, commit `3a48fa8`. No sampl
 
 ### P7. NB3's message and psense numbers pull in opposite directions [03.Q1–Q3]
 
-**Context.** NB3 replaces NB2's `Normal(0, 1)` slope prior with `StudentT(7, 0, 1)`. Posterior `b1` 8.16 (NB2: 2.29, NB1: 11.33). §5.4: conflict still flagged; heavier tails made the prior "less brittle". But prior sensitivity *rose* (`b1` 0.393 vs 0.367; `b0` 0.335 vs 0.191). The book's lesson from the same prior is the robustness one: posterior mean 9.2, "similar to what we had originally obtained".
+**Context.** NB3 replaces NB2's `Normal(0, 1)` slope prior with `StudentT(7, 0, 1)`. Posterior `b1` 8.16 (NB2: 2.29, NB1: 11.33). §5.4: conflict still flagged; heavier tails made the prior "less brittle". But prior sensitivity *rose* (`b1` 0.393 vs 0.367; `b0` 0.335 vs 0.191). The book's lesson from the same prior is the robustness one: posterior mean 9.2, "similar to what we had originally obtained". The Python port gets 8.08 (95% ETI 2.9–13), essentially NB3's value, so the difference from the book is brms-vs-PyMC, not a notebook error; with 8 rather than 9 against 11, NB3's more cautious "not fully" is defensible.
 
 **Why it matters.** A student comparing tables sees "worse" numbers under a prior described as better. The notebook needs either the book's framing (tails let the data win, as the posterior shows) or one sentence on why power-scaling stays high when the posterior sits in the prior's tail. The Normal-vs-t density plot (x from −6 to 6, linear density) hides the tails where the priors differ and where the posterior lands.
 
@@ -97,7 +97,7 @@ All on branch `claude/sleep-notebooks-review-m0u2y9`, commit `3a48fa8`. No sampl
 
 **Context.** NB2 has no interpretation section. Under the tight slope prior, `b1` = 2.29 (NB1: 11.33), `b0` rises 268 → 300 ms and `sd_y` 51 → 55 ms to compensate; psense flags all three.
 
-**Why it matters.** That compromise is *the* mechanism of prior–data conflict and explains both the failed PPC and why unchanged priors get flagged. The book uses exactly this example.
+**Why it matters.** That compromise is *the* mechanism of prior–data conflict and explains both the failed PPC and why unchanged priors get flagged. The book uses exactly this example (its text reports `b1` 3.8; the Python port reports 2.3, `Intercept` 300, `sigma` 55 — NB2's numbers).
 
 **Option.** One short question comparing the summary with NB1's.
 
@@ -111,7 +111,7 @@ All on branch `claude/sleep-notebooks-review-m0u2y9`, commit `3a48fa8`. No sampl
 
 ### P10. Residual-scale prior when a hierarchy is added [04.Q1, 07.Q1]
 
-**Context.** NB4 keeps NB1's `sd_y ~ Exponential(scale=50)` and adds `sd_b0 ~ Exponential(scale=25)` with no rationale. The book splits NB1's 50 into 25 + 25 (within- and between-person), and the source lists "shall the prior on sigma change now that we add more terms?" as a discussion point. NB5, NB7 (log scale: keeps 1/3, book 1/6; `sd_b1` 0.05, book 0.1), NB12 follow NB4.
+**Context.** NB4 keeps NB1's `sd_y ~ Exponential(scale=50)` and adds `sd_b0 ~ Exponential(scale=25)` with no rationale. The book splits NB1's 50 into 25 + 25 (within- and between-person); the Python port instead uses 50 for both `sigma` and the subject SD. NB4's 50 + 25 matches neither. The R source lists "shall the prior on sigma change now that we add more terms?" as a discussion point. NB5, NB7 (log scale: keeps 1/3, book 1/6; `sd_b1` 0.05, book 0.1), NB12 follow NB4.
 
 **Why it matters.** Small numerically (the data dominate), but it's a named teaching point in the source and the current "suppose we use 25" gives students no reasoning to imitate.
 
@@ -187,7 +187,7 @@ All on branch `claude/sleep-notebooks-review-m0u2y9`, commit `3a48fa8`. No sampl
 
 ### S5. Participant panels and trace colours are unlabeled [01.Q6, 04.Q7]
 
-**Context.** `plot_participants` (NB1–11) draws 18 untitled panels; answers from NB7 on refer to participants by ID and grid position. `plot_trace_dist(..., coords=…)` for three participants draws three unlabeled colours (NB4–10). NB12's LOO helper titles its panels.
+**Context.** `plot_participants` (NB1–11) draws 18 untitled panels; answers from NB7 on refer to participants by ID and grid position. `plot_trace_dist(..., coords=…)` for three participants draws three unlabeled colours (NB4–10). NB12's LOO helper titles its panels, as does the Python port's per-subject plot ("subject 308", …).
 
 **Option.** Add panel titles to `plot_participants` (as NB12 does) and a legend or per-participant rows to the trace plots. Code change → re-run.
 
