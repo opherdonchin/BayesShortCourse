@@ -8,7 +8,7 @@ Each notebook is organized as a two-level, tagged Q&A worksheet: `## N. <Stage>`
 
 ## Plotting grammar
 
-Every prior and posterior predictive check uses one panel per participant (`plot_participants`), so the checks are on the observable data scale and use a continuous day axis with each participant's own observations overlaid — the same colours, HDI bands, and legend as `golf/`: an orange mean line, blue 50%/90% HDI bands, black observed points. Population-level trends (a single line, no faceting) use `plot_population` where a notebook actually needs it; it is defined only in notebooks that call it, not carried forward unused. Plotting helpers are defined once per notebook in a "Plotting helper" cell and reused throughout.
+Every prior and posterior predictive check uses one panel per participant (`plot_participants`), so the checks are on the observable data scale and use a continuous day axis with each participant's own observations overlaid — the same colours, HDI bands, and legend as `golf/`: a mean line in Matplotlib colour `C1` (pink under the `arviz-variat` style), blue 50%/90% HDI bands, black observed points. Population-level trends (a single line, no faceting) use `plot_population` where a notebook actually needs it; it is defined only in notebooks that call it, not carried forward unused. Plotting helpers are defined once per notebook in a "Plotting helper" cell and reused throughout.
 
 Hierarchical notebooks (4 onward) use `mu_y` for the per-observation location/linear-predictor parameter (fixed effects **and** participant-specific deviations together — there is no separate "typical participant" `population_mu`, unless a specific notebook's question calls for one). It is computed once during sampling — there is no post-hoc "predict" step.
 
@@ -37,7 +37,7 @@ The expected reaction time is a derived quantity whose formula depends on the li
 
 The book's varying-intercept/varying-slope models use an LKJ prior for correlations among group-specific coefficients (notebooks 5, 7–12 here). We use independent hierarchical priors for participant intercepts and slopes instead — a deliberate simplification for a short course, not a software limitation — so these notebooks reproduce the varying-intercept/varying-slope structure but not the intercept–slope correlation parameter. Centered or non-centered parameterizations are chosen according to the notebook's teaching purpose and verified with sampling diagnostics rather than imposed as a course-wide rule.
 
-`pm.ExGaussian(mu, sigma, nu)` matches the book's parameterization directly. Its expected response is `mu + nu`.
+`pm.ExGaussian(mu, sigma, nu)` uses `mu` for the location of the Gaussian component and `nu` for the mean of the exponential component, so its expected response is `mu + nu`. This differs from the brms `exgaussian()` family used in the book's online case study, where `mu` is the mean of the whole distribution; the book's mean-structure priors therefore describe the expected reaction time, whereas notebooks 9–11 put them on the Gaussian location.
 
 Prior sensitivity (power-scaling, notebooks 1, 2, 3, 6, 7) uses `pm.compute_log_likelihood` together with PyMC's own internal `compute_log_density(..., kind="prior")` — the same function `pm.compute_log_likelihood` itself calls with `kind="likelihood"`; there is no separate public `kind="prior"` wrapper yet.
 
