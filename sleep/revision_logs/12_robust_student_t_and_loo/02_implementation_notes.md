@@ -352,3 +352,63 @@ This interaction is new content (4.10–4.11); see decision 7.
 - **Executed drafts:** `exec_draft.ipynb`, `exec_draft2.ipynb`, `*_dump.txt`, `draft*_imgs/`,
   `final_imgs/`, `nbconvert_*.log`.
 - **Pre-revision dump:** `pre_solved_dump.txt`; Bambi source: `bambi/src/`.
+
+## Fix loop (Step 4, after the fresh-eyes review)
+
+The reviewer (`04_review.md`) confirmed the `b1`/`mu_b1` rename is complete and consistent, the
+statistics are right (priors, `sd_y` correction, Student-t parameterization, Bambi citation), and
+the LOO/PSIS-LOO material matches arviz-stats 1.3.2/arviz-plots 1.3.1 column by column. It found
+one moderate issue and several minor precision points, all markdown-only, applied directly
+(orchestrator, not routed back to this agent):
+
+- **Finding 1 (moderate).** 4.5's answer and 5.3's summary generalized "Student-t Pareto k stays
+  low" from the single committed run; across 13 realizations (the reviewer's 9 plus this
+  implementation's 4), `student_t_intercept` flagged an observation (k > 0.7) in 2 of 13. Fixed:
+  4.5's question now quotes a test-run range for the Student-t models too, and both 4.5's and
+  5.3's answers now describe the committed run's result as "in this run" rather than as a general
+  property.
+- **Finding 2 (minor-moderate).** `dse` treats the 144 observations as independent although they
+  are 18 participants' repeated measures; the reviewer's participant-clustered SE check shows
+  every conclusion survives, but the real uncertainty is somewhat larger. Fixed: one caveat
+  sentence in 4.6, mirrored into 4.8.
+- **Finding 3 (minor).** 1.2 implied `sd_y` becomes an ordinary standard deviation whenever
+  ν > 2; it never does. Fixed: replaced with the exact relationship,
+  $sd_y\sqrt{\nu/(\nu-2)}$.
+- **Finding 4 (minor).** 2.6 didn't mention that the Student-t's narrower intervals catch a few
+  more near-misses than the Gaussian's, which a student could misread as worse prediction. Fixed:
+  added the calibration framing (about 14/144 expected to fall outside a 90% interval).
+- **Finding 5 (minor).** 4.11's "heavy tails cannot describe such a systematic mismatch" overstated
+  (`student_t_intercept` does still gain ~9 ELPD over the Gaussian on the unusual days), and its
+  second paragraph asserted the Gaussian/Student-t `sd_y` contrast without the numbers already in
+  1.7. Fixed: softened to "describe ... poorly" and grounded the second paragraph in the actual
+  `sd_y` values (30→26 ms Gaussian, 23→12 ms Student-t).
+- **Finding 6 (minor).** 2.2 said PSIS-LOO "needs" both the pointwise log likelihood and
+  posterior predictive draws; only the log likelihood is needed for the ELPD itself. Fixed: split
+  the sentence so the log-likelihood requirement is separated from what the LOO-interval/LOO-PIT
+  plots additionally need.
+- **Finding 7 (optional, skipped).** The two Pareto-k plots don't share a y-range and keep
+  `plot_khat`'s generic "Data Point" x-label. The reviewer's own fix requires a code-cell change
+  and therefore re-execution, which would produce a new Monte Carlo realization on this host (the
+  reviewer's own same-seed re-run was *not* bit-identical to the committed run, unlike every
+  other notebook in this pass) and require re-verifying every quoted number. The reviewer
+  explicitly flagged this as skippable "if that cost is not wanted now" since the table under the
+  plots already covers the substance. Orchestrator's call: skip, given the cost/benefit and that
+  this is a cosmetic finding only.
+- **Finding 8 (minor).** 5.3 listed the "population-average effect is the same in all four
+  models" as something the comparison *fails* to establish, when it is actually a positive
+  finding, and dropped 5.2's point that the shared-slope models are overconfident about that
+  average. Fixed: reworded the bullet to state the finding correctly and restore the nuance.
+- **T1, T2, T4 (trivial).** Applied: "gives" → "estimates" the ELPD (4.1, since the LOO sum is an
+  estimate, not the ELPD itself); precision fixes to 5.1 (shared-slope models have no
+  participant-level slope; "usually" changes the posterior when leaving out a whole participant);
+  1.4's "`b0` and `b1`" → "`b0`, and in the varying-slope models `b1`" (the shared-slope models
+  have no participant-level `b1`).
+- **T3 (trivial).** Applied: 3.4's "Yes" softened to "As far as this check can tell, yes",
+  consistent with the notebook's own "a rank is not proof" framing elsewhere.
+- **T5, T6 (trivial, skipped).** T5 (reordering 5.2 for flow) and T6 (an optional one-clause
+  bridge acknowledging notebooks 6-11 in the intro) are both explicitly marked optional by the
+  reviewer and not required by the plan (which designed this notebook to be standalone). Skipped.
+
+No re-execution was needed — every applied fix is markdown-only and changes no numeric claim.
+Self-work file re-derived and re-verified: 74 cells in both files, only the 19 solution
+placeholders and cell 0's badge URL differ.
